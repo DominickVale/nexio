@@ -39,9 +39,12 @@ mm.add(
 
     const mainTimeline = gsap.timeline({
       scrollTrigger: {
+        trigger: '#station-1',
+        endTrigger: '#station-5',
         start: 'top top',
-        end: 'bottom top+=100%',
+        end: 'bottom top',
         scrub: 2,
+        markers: true,
         snap: {
           snapTo: 'labelsDirectional',
           duration: { min: 0.8, max: 1 },
@@ -111,7 +114,7 @@ mm.add(
           trigger: `#station-1 .spacer`,
           start: 'center 80%',
           end: 'center 45%',
-          // markers: true,
+          markers: true,
           toggleActions: 'play reverse play reverse',
           preventOverlaps: true,
         },
