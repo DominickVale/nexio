@@ -1,213 +1,194 @@
 <!-- THE ANIMATIONS STRUCTURE -->
-<div id="assembly-line">
-    <div id="padding__1" class="padding padding__1"></div>
-    <div id="padding__2" class="padding padding__2"></div>
-    <div id="padding__3" class="padding padding__3"></div>
-    <div id="padding__4" class="padding padding__4"></div>
-    <div id="padding__5" class="padding padding__5"></div>
-    <div id="animations">
-        <div class="image__container container__1">
-            <video autoplay loop muted playsinline>
-                <source src="/factory_1.mp4" type='video/mp4; codecs="hvc1"' />
-                <source src="/factory_1.webm" type="video/webm" />
-            </video>
-            <img class="mobile" src="/factory_1_m.svg" />
-            <div class="image__2">
-                <div class="image__container container__2">
-                    <img src="/factory_2.svg" />
-                    <img class="mobile" src="/factory_2_m.svg" />
-                    <div class="image__3">
-                        <div class="image__container container__3">
-                            <img src="/factory_3.svg" />
-                            <img class="mobile" src="/factory_3_m.svg" />
-                            <div class="image__4">
-                                <div class="image__container container__4">
-                                    <img src="/factory_4.svg" />
-                                    <img class="mobile" src="/factory_4_m.svg" />
-                                    <div class="image__5">
-                                        <div class="image__container container__5">
-                                            <img src="/factory_5.svg" />
-                                            <img class="mobile" src="/factory_5.svg" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+<div id="animations">
+  <div class="image__container container__1">
+    <video autoplay loop muted playsinline>
+      <source src="/factory_1.mp4" type='video/mp4; codecs="hvc1"' />
+      <source src="/factory_1.webm" type="video/webm" />
+    </video>
+    <img class="mobile" src="/factory_1_m.svg" />
+    <div class="image__2">
+      <div class="image__container container__2">
+        <img src="/factory_2.svg" />
+        <img class="mobile" src="/factory_2_m.svg" />
+        <div class="image__3">
+          <div class="image__container container__3">
+            <img src="/factory_3.svg" />
+            <img class="mobile" src="/factory_3_m.svg" />
+            <div class="image__4">
+              <div class="image__container container__4">
+                <img src="/factory_4.svg" />
+                <img class="mobile" src="/factory_4_m.svg" />
+                <div class="image__5">
+                  <div class="image__container container__5">
+                    <img src="/factory_5.svg" />
+                    <img class="mobile" src="/factory_5.svg" />
+                  </div>
                 </div>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 </div>
 
 <style>
-    /* LENIS */
-    html.lenis,
-    html.lenis body {
-        height: auto;
-    }
+  /* LENIS */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
 
-    .lenis.lenis-smooth {
-        scroll-behavior: auto !important;
-    }
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
 
-    .lenis.lenis-smooth [data-lenis-prevent] {
-        overscroll-behavior: contain;
-    }
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
 
-    .lenis.lenis-stopped {
-        overflow: hidden;
-    }
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
 
-    .lenis.lenis-smooth iframe {
-        pointer-events: none;
-    }
+  .lenis.lenis-smooth iframe {
+    pointer-events: none;
+  }
 
-/*
+  /*
 * actual css
 */
-    #dbox1 {
-        position: fixed;
-        top: 17vh;
-        left: 12vw;
-    }
-    #dbox2 {
-        position: fixed;
-        top: 18vh;
-        left: 5vw;
-    }
-    #dbox3 {
-        position: fixed;
-        top: 20vh;
-        left: 5vw;
-    }
-    #dbox4 {
-        position: fixed;
-        top: 20vh;
-        left: 5vw;
-    }
-    #dbox5 {
-        position: fixed;
-        top: 22vh;
-        left: 5vw;
-    }
-    #animations {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-    }
-    .assembly-line__padding {
-        height: 100vh;
-        width: 100%;
-    }
-    #assembly-line img {
-        height: 100%;
-        width: 100%;
-    }
-    .image__2 {
-        position: absolute;
-        bottom: -108vh;
-        right: -84vh;
-    }
+  #draggable-box-1 {
+    position: fixed;
+    top: 17vh;
+    left: 12vw;
+  }
+  #draggable-box-2 {
+    position: fixed;
+    top: 18vh;
+    left: 5vw;
+  }
+  #draggable-box-3 {
+    position: fixed;
+    top: 20vh;
+    left: 5vw;
+  }
+  #draggable-box-4 {
+    position: fixed;
+    top: 20vh;
+    left: 5vw;
+  }
+  #draggable-box-5 {
+    position: fixed;
+    top: 22vh;
+    left: 5vw;
+  }
+  #animations {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    left: clamp(4rem, calc(100vw - 117vh), 35vw);
+    top: -2vh;
+  }
+  #animations img {
+    height: 100%;
+    width: 100%;
+  }
 
-    .image__3 {
-        position: absolute;
-        bottom: -108vh;
-        right: -85vh;
-    }
+  #animations img.mobile {
+    display: none;
+  }
 
-    .image__4 {
-        position: absolute;
-        bottom: -106vh;
-        right: -85vh;
-    }
+  .image__2 {
+    position: absolute;
+    bottom: -108vh;
+    right: -84vh;
+  }
 
-    .image__5 {
-        position: absolute;
-        bottom: -85vh;
-        right: -87vh;
-    }
+  .image__3 {
+    position: absolute;
+    bottom: -108vh;
+    right: -85vh;
+  }
 
+  .image__4 {
+    position: absolute;
+    bottom: -106vh;
+    right: -85vh;
+  }
+
+  .image__5 {
+    position: absolute;
+    bottom: -85vh;
+    right: -87vh;
+  }
+
+  .image__container {
+    --size: calc(140vh + 12vw);
+    width: var(--size);
+    height: var(--size);
+    position: relative;
+    outline: 1px solid yellow;
+  }
+
+  @media screen and (max-width: 768px) {
     .image__container {
-        --size: calc(140vh + 12vw);
-        width: var(--size);
-        height: var(--size);
-        position: relative;
-        outline: 1px solid yellow;
-    }
-
-    #assembly-line {
-        width: 100%;
-        height: 100%;
-        position: relative;
-    }
-
-    #animations {
-        left: clamp(4rem, calc(100vw - 117vh), 35vw);
-        top: -2vh;
+      --size: 70vh;
     }
 
     #animations img.mobile {
-        display: none;
+      display: block;
+      outline: 2px solid red;
     }
 
-    @media screen and (max-width: 768px) {
-        .image__container {
-            --size: 70vh;
-        }
-
-        #animations img.mobile {
-            display: block;
-            outline: 2px solid red;
-        }
-
-        #animations {
-            left: clamp(1rem, calc(115vw - 50vh), 40vw);
-            top: 5vh;
-        }
-
-        #animations img:not(.mobile) {
-            display: none;
-        }
-
-        .image__2 {
-            position: absolute;
-            bottom: -26vh;
-            right: -40vh;
-        }
-
-        .image__3 {
-            position: absolute;
-            bottom: -32vh;
-            right: -50vh;
-        }
-
-        .image__4 {
-            position: absolute;
-            bottom: -32vh;
-            right: -50vh;
-        }
-
-        .image__5 {
-            position: absolute;
-            bottom: -28vh;
-            right: -48vh;
-        }
-
-        #dbox1,
-        #dbox2,
-        #dbox3,
-        #dbox4,
-        #dbox5 {
-            position: fixed;
-            top: unset;
-            left: 1.3rem;
-            right: 1.3rem;
-            bottom: 1.3rem;
-            width: 85vw;
-            height: 33vh;
-        }
+    #animations {
+      left: clamp(1rem, calc(115vw - 50vh), 40vw);
+      top: 5vh;
     }
+
+    #animations img:not(.mobile) {
+      display: none;
+    }
+
+    .image__2 {
+      position: absolute;
+      bottom: -26vh;
+      right: -40vh;
+    }
+
+    .image__3 {
+      position: absolute;
+      bottom: -32vh;
+      right: -50vh;
+    }
+
+    .image__4 {
+      position: absolute;
+      bottom: -32vh;
+      right: -50vh;
+    }
+
+    .image__5 {
+      position: absolute;
+      bottom: -28vh;
+      right: -48vh;
+    }
+
+    #draggable-box-1,
+    #draggable-box-2,
+    #draggable-box-3,
+    #draggable-box-4,
+    #draggable-box-5 {
+      position: fixed;
+      top: unset;
+      left: 1.3rem;
+      right: 1.3rem;
+      bottom: 1.3rem;
+      width: 85vw;
+      height: 33vh;
+    }
+  }
 </style>

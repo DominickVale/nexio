@@ -74,7 +74,7 @@ mm.add(
     // build animations
     positionsAnimations.forEach((pos, i) => {
       const id = i + 1
-      const boxId = '#dbox' + id
+      const boxId = '#draggable-box-' + id
       const [x, yPercent] = pos
       if (x && yPercent) {
         // set box opacity
@@ -108,7 +108,7 @@ mm.add(
     const boxAnim1 = gsap
       .timeline({
         scrollTrigger: {
-          trigger: `#padding__1`,
+          trigger: `#station-1 .spacer`,
           start: 'center 80%',
           end: 'center 45%',
           // markers: true,
@@ -116,13 +116,13 @@ mm.add(
           preventOverlaps: true,
         },
       })
-      .to('#dbox1', {
+      .to('#draggable-box-1', {
         scale: 1,
         duration: 0.8,
         ease: 'elastic.out(1,0.3)',
       })
       .to(
-        '#dbox1',
+        '#draggable-box-1',
         {
           autoAlpha: 1,
           ease: 'power4.inOut',
@@ -133,7 +133,7 @@ mm.add(
     const boxAnim2 = gsap
       .timeline({
         scrollTrigger: {
-          trigger: `#padding__2`,
+          trigger: `#station-2 .spacer`,
           start: 'center 80%',
           end: 'center 55%',
           // markers: true,
@@ -144,14 +144,14 @@ mm.add(
           console.log('Changing opacity 2')
         },
       })
-      .to('#dbox2', {
+      .to('#draggable-box-2', {
         autoAlpha: 1,
         scale: 1,
         duration: 0.5,
         ease: 'elastic.out(1,0.3)',
       })
       .to(
-        '#dbox2',
+        '#draggable-box-2',
         {
           autoAlpha: 1,
           ease: 'power4.inOut',
@@ -162,7 +162,7 @@ mm.add(
     const boxAnim3 = gsap
       .timeline({
         scrollTrigger: {
-          trigger: `#padding__3`,
+          trigger: `#station-3 .spacer`,
           start: 'center bottom',
           end: 'center 85%',
           // markers: true,
@@ -170,14 +170,14 @@ mm.add(
           preventOverlaps: true,
         },
       })
-      .to('#dbox3', {
+      .to('#draggable-box-3', {
         autoAlpha: 1,
         scale: 1,
         duration: 0.5,
         ease: 'elastic.out(1,0.3)',
       })
       .to(
-        '#dbox2',
+        '#draggable-box-2',
         {
           autoAlpha: 1,
           ease: 'power4.inOut',
@@ -188,7 +188,7 @@ mm.add(
     const boxAnim4 = gsap
       .timeline({
         scrollTrigger: {
-          trigger: `#padding__4`,
+          trigger: `#station-4 .spacer`,
           start: 'top center+=20%',
           end: 'top center',
           // markers: true,
@@ -196,14 +196,14 @@ mm.add(
           preventOverlaps: true,
         },
       })
-      .to('#dbox4', {
+      .to('#draggable-box-4', {
         autoAlpha: 1,
         scale: 1,
         duration: 0.5,
         ease: 'elastic.out(1,0.3)',
       })
       .to(
-        '#dbox4',
+        '#draggable-box-4',
         {
           autoAlpha: 1,
           ease: 'power4.inOut',
@@ -214,7 +214,7 @@ mm.add(
     const boxAnim5 = gsap
       .timeline({
         scrollTrigger: {
-          trigger: `#padding__5`,
+          trigger: `#station-5 .spacer`,
           start: 'top bottom-=10%',
           end: 'top bottom-=40%',
           // markers: true,
@@ -222,14 +222,14 @@ mm.add(
           preventOverlaps: true,
         },
       })
-      .to('#dbox5', {
+      .to('#draggable-box-5', {
         autoAlpha: 1,
         scale: 1,
         duration: 0.5,
         ease: 'elastic.out(1,0.3)',
       })
       .to(
-        '#dbox5',
+        '#draggable-box-5',
         {
           autoAlpha: 1,
           ease: 'power4.inOut',
@@ -239,22 +239,22 @@ mm.add(
 
     // nav buttons
     //
-    gsap.utils.toArray('.navigation a').forEach(link => {
-      const l = link as HTMLAnchorElement
-      l.addEventListener('click', e => {
-        e.preventDefault()
-        const scrTo = l.getAttribute('data-scroll-to') || '0'
-        const labelPos = mainTimeline.scrollTrigger!.labelToScroll(scrTo)
-
-        // lenis.scrollTo(labelPos)
-        console.log(labelPos)
-        gsap.to(window, {
-          scrollTo: labelPos,
-          duration: 1,
-          ease: 'power3.inOut',
-        })
-      })
-    })
+    // gsap.utils.toArray('.navigation a').forEach(link => {
+    //   const l = link as HTMLAnchorElement
+    //   l.addEventListener('click', e => {
+    //     e.preventDefault()
+    //     const scrTo = l.getAttribute('data-scroll-to') || '0'
+    //     const labelPos = mainTimeline.scrollTrigger!.labelToScroll(scrTo)
+    //
+    //     // lenis.scrollTo(labelPos)
+    //     console.log(labelPos)
+    //     gsap.to(window, {
+    //       scrollTo: labelPos,
+    //       duration: 1,
+    //       ease: 'power3.inOut',
+    //     })
+    //   })
+    // })
   },
 )
 
