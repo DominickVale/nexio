@@ -77,7 +77,7 @@ export default class App {
               [() => -(window.innerHeight * 0.9), -55],
               [() => -(window.innerHeight * 1.4), -85],
               [() => -(window.innerHeight * 1.9), -115],
-              [() => -(window.innerHeight * 2.4), -145],
+              [() => -(window.innerHeight * 3), -180],
               [],
             ]
           : [

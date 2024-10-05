@@ -8,7 +8,7 @@ export function setupHeroAnimations(
   reduceMotion: boolean,
 ) {
   const { selectors } = CONFIG
-  $(selectors.heroButton)?.addEventListener('click', e => {
+  function onClickHero(e: MouseEvent) {
     e.preventDefault()
     gsap
       .timeline()
@@ -29,14 +29,14 @@ export function setupHeroAnimations(
       .fromTo(
         selectors.factoriesContainer,
         {
-          '--left': "300vw",
-          '--max-left': "200vw",
-          '--top': "100vh",
+          '--left': '300vw',
+          '--max-left': '200vw',
+          '--top': '100vh',
         },
         {
-          '--left': "100vw",
-          '--max-left': "35vw",
-          '--top': "-2vh",
+          '--left': isDesktop ? '100vw' : '115vw',
+          '--max-left': isDesktop ? '35vw' : '40vw',
+          '--top': isDesktop ? '-2vh' : '5vh',
           duration: 1.5,
           ease: 'power3.out',
         },
@@ -48,5 +48,8 @@ export function setupHeroAnimations(
         duration: 1.5,
         ease: 'power3.out',
       })
-  })
+  }
+
+  $(selectors.heroButton)?.addEventListener('click', onClickHero)
+  $(selectors.heroButton + '-mobile')?.addEventListener('click', onClickHero)
 }

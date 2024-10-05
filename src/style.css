@@ -14,7 +14,6 @@ body {
   height: 100%;
   left: clamp(4rem, calc(var(--left) - 117vh), var(--max-left));
   top: var(--top);
-  z-index: 1;
 }
 #factories-animations-container img {
   height: 100%;
@@ -82,6 +81,18 @@ body {
   left: 5vw;
 }
 
+
+.station-1 {
+  outline: 1px solid red;
+}
+.station-wrapper .spacer {
+  outline: 1px solid yellow;
+}
+
+.draggable-box {
+  height: max-content;
+}
+
 @media screen and (max-width: 768px) {
   .image__container {
     --size: 70vh;
@@ -92,8 +103,11 @@ body {
   }
 
   #factories-animations-container {
-    left: clamp(1rem, calc(115vw - 50vh), 40vw);
-    top: 5vh;
+    --left: 300vw; /* should animate to 115vw to be shown*/
+    --max-left: 200vw; /* 40vw */
+    --top: 100vh; /* 5vh */
+    left: clamp(1rem, calc(var(--left) - 50vh), var(--max-left));
+    top: var(--top);
   }
 
   #factories-animations-container img:not(.mobile) {
@@ -124,28 +138,17 @@ body {
     right: -48vh;
   }
 
-  #draggable-box-1,
-  #draggable-box-2,
-  #draggable-box-3,
-  #draggable-box-4,
-  #draggable-box-5 {
-    position: fixed;
-    top: unset;
-    left: 1.3rem;
-    right: 1.3rem;
-    bottom: 1.3rem;
-    width: 85vw;
-    height: 33vh;
-  }
-}
-
-.station-1 {
-  outline: 1px solid red;
-}
-.station-wrapper .spacer {
-  outline: 1px solid yellow;
-}
-
-.draggable-box {
-  height: max-content;
+  /* #draggable-box-1, */
+  /* #draggable-box-2, */
+  /* #draggable-box-3, */
+  /* #draggable-box-4, */
+  /* #draggable-box-5 { */
+  /*   position: fixed; */
+  /*   top: unset; */
+  /*   left: 1.3rem; */
+  /*   right: 1.3rem; */
+  /*   bottom: 1.3rem; */
+  /*   width: 85vw; */
+  /*   height: 33vh; */
+  /* } */
 }
