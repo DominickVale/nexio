@@ -1,11 +1,10 @@
 import gsap from 'gsap'
-import ScrollToPlugin from 'gsap/ScrollToPlugin'
-import ScrollTrigger from 'gsap/ScrollTrigger'
+import { CONFIG } from './config'
+import './style.css'
+import { setupShowFactoriesAnimations } from './animations/show-factories'
+import { setupHeroAnimations } from './animations/hero'
 // import Lenis from 'lenis'
 // import Snap from 'lenis/snap'
-
-gsap.registerPlugin(ScrollTrigger)
-gsap.registerPlugin(ScrollToPlugin)
 
 // const lenis = new Lenis({
 //   lerp: 0.035
@@ -24,241 +23,155 @@ gsap.registerPlugin(ScrollToPlugin)
 //   lerp: 0.07,
 // })
 
-const mm = gsap.matchMedia(),
-  breakpoint = 768
+export default class App {
+  heroShown: boolean
+  mainTimeline: gsap.core.Timeline
 
-mm.add(
-  {
-    isDesktop: `(min-width: ${breakpoint}px)`,
-    isMobile: `(max-width: ${breakpoint - 1}px)`,
-    reduceMotion: `(prefers-reduced-motion: reduce)`,
-  },
-  context => {
-    const { isDesktop, isMobile, reduceMotion } =
-      context.conditions as gsap.Conditions
+  constructor() {
+    this.heroShown = false
+    this.mainTimeline = gsap.timeline()
+    window.app = this
+    this.init()
+    this.setupEvents()
+  }
 
-    const mainTimeline = gsap.timeline({
-      scrollTrigger: {
-        trigger: '#station-1',
-        endTrigger: '#station-5',
-        start: 'top top',
-        end: 'bottom top',
-        scrub: 2,
-        markers: true,
-        snap: {
-          snapTo: 'labelsDirectional',
-          duration: { min: 0.8, max: 1 },
-          ease: 'power4.out',
-          delay: 0,
-          inertia: false,
-        },
+  init() {
+    const mm = gsap.matchMedia(),
+      breakpoint = 768
+
+    mm.add(
+      {
+        isDesktop: `(min-width: ${breakpoint}px)`,
+        isMobile: `(max-width: ${breakpoint - 1}px)`,
+        reduceMotion: `(prefers-reduced-motion: reduce)`,
       },
-    })
+      context => {
+        const { isDesktop, isMobile, reduceMotion } =
+          context.conditions as gsap.Conditions
+        const { selectors } = CONFIG
 
-    // [x: () => x, yPercent] @todo: find ratios if video sizes will be same
-    const positionsAnimations = isMobile
-      ? [
-          [() => -(window.innerHeight * 0.4), -25],
-          [() => -(window.innerHeight * 0.9), -55],
-          [() => -(window.innerHeight * 1.4), -85],
-          [() => -(window.innerHeight * 1.9), -115],
-          [() => -(window.innerHeight * 2.4), -145],
-          [],
-        ]
-      : [
-          [() => -(window.innerHeight * 0.83), -105],
-          [() => -(window.innerHeight * 1.72), -215],
-          [() => -(window.innerHeight * 2.57), -320],
-          [() => -(window.innerHeight * 3.4), -425],
-          [() => -(window.innerHeight * 5), -600],
-          [],
-        ]
+        // setupShowFactoriesAnimations(isDesktop, isMobile, reduceMotion)
+        setupHeroAnimations(isDesktop, isMobile, reduceMotion)
 
-    // build animations
-    positionsAnimations.forEach((pos, i) => {
-      const id = i + 1
-      const boxId = '#draggable-box-' + id
-      const [x, yPercent] = pos
-      if (x && yPercent) {
-        // set box opacity
-        console.log('setting ', boxId, 'opacity 0')
-        gsap.set(boxId, {
-          autoAlpha: 0,
-          scale: 0.5,
+        this.mainTimeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: '#station-1',
+            endTrigger: '#station-5',
+            start: 'top top',
+            end: 'bottom top',
+            scrub: 2,
+            // markers: true,
+            snap: {
+              snapTo: 'labelsDirectional',
+              duration: { min: 0.8, max: 1 },
+              ease: 'power4.out',
+              delay: 0,
+              inertia: false,
+            },
+          },
+        })
+        // [x: () => x, yPercent] @todo: find ratios if video sizes will be same
+        const positionsAnimations = isMobile
+          ? [
+              [() => -(window.innerHeight * 0.4), -25],
+              [() => -(window.innerHeight * 0.9), -55],
+              [() => -(window.innerHeight * 1.4), -85],
+              [() => -(window.innerHeight * 1.9), -115],
+              [() => -(window.innerHeight * 2.4), -145],
+              [],
+            ]
+          : [
+              [() => -(window.innerHeight * 0.83), -105],
+              [() => -(window.innerHeight * 1.72), -215],
+              [() => -(window.innerHeight * 2.57), -320],
+              [() => -(window.innerHeight * 3.4), -425],
+              [() => -(window.innerHeight * 5), -600],
+              [],
+            ]
+
+        // build animations
+        positionsAnimations.forEach((pos, i) => {
+          const id = i + 1
+          const boxId = '#draggable-box-' + id
+          const [x, yPercent] = pos
+          if (x && yPercent) {
+            // set box opacity
+            console.log('setting ', boxId, 'opacity 0')
+            gsap.set(boxId, {
+              autoAlpha: 0,
+            })
+
+            // scrolling animation (factories)
+            const fTl = gsap.timeline().to(selectors.factoriesContainer, {
+              x,
+              yPercent,
+            })
+
+            this.mainTimeline.addLabel(id.toString()).add(fTl)
+
+            // draggable boxes animations
+            gsap
+              .timeline({
+                scrollTrigger: {
+                  trigger: `#station-${id}`,
+                  start: 'center 80%',
+                  end: 'center 40%',
+                  // markers: true,
+                  toggleActions: 'play reverse play reverse',
+                  preventOverlaps: true,
+                },
+              })
+              .from(`${selectors.box}-${id}`, {
+                y: () => window.innerHeight,
+                duration: 1.2,
+                ease: 'power4.inOut',
+              })
+              .to(
+                `${selectors.box}-${id}`,
+                {
+                  autoAlpha: 1,
+                  ease: 'power4.inOut',
+                },
+                '<',
+              )
+          } else {
+            this.mainTimeline.addLabel(id.toString())
+          }
         })
 
-        const fTl = gsap.timeline().to('#animations', {
-          x,
-          yPercent,
-        })
+        // build snap points
+        // positionsAnimations.forEach((_, i) => {
+        //   const id = (i + 1).toString()
+        //   const snapPos = mainTimeline.scrollTrigger!.labelToScroll(id)
+        //   snap.add(snapPos)
+        //   console.log(snapPos)
+        // })
 
-        mainTimeline.addLabel(id.toString()).add(fTl)
-      } else {
-        mainTimeline.addLabel(id.toString())
-      }
-    })
+        // nav buttons
+        //
+        // gsap.utils.toArray('.navigation a').forEach(link => {
+        //   const l = link as HTMLAnchorElement
+        //   l.addEventListener('click', e => {
+        //     e.preventDefault()
+        //     const scrTo = l.getAttribute('data-scroll-to') || '0'
+        //     const labelPos = mainTimeline.scrollTrigger!.labelToScroll(scrTo)
+        //
+        //     // lenis.scrollTo(labelPos)
+        //     console.log(labelPos)
+        //     gsap.to(window, {
+        //       scrollTo: labelPos,
+        //       duration: 1,
+        //       ease: 'power3.inOut',
+        //     })
+        //   })
+        // })
+      },
+    )
 
-    // build snap points
-    // positionsAnimations.forEach((_, i) => {
-    //   const id = (i + 1).toString()
-    //   const snapPos = mainTimeline.scrollTrigger!.labelToScroll(id)
-    //   snap.add(snapPos)
-    //   console.log(snapPos)
-    // })
+    if (CONFIG.debug) {
+      console.log('[DEBUG]: NEXIOS_CONFIG: ', CONFIG)
+    }
+  }
 
-    // Box animations
-
-    const boxAnim1 = gsap
-      .timeline({
-        scrollTrigger: {
-          trigger: `#station-1 .spacer`,
-          start: 'center 80%',
-          end: 'center 45%',
-          markers: true,
-          toggleActions: 'play reverse play reverse',
-          preventOverlaps: true,
-        },
-      })
-      .to('#draggable-box-1', {
-        scale: 1,
-        duration: 0.8,
-        ease: 'elastic.out(1,0.3)',
-      })
-      .to(
-        '#draggable-box-1',
-        {
-          autoAlpha: 1,
-          ease: 'power4.inOut',
-        },
-        '<',
-      )
-
-    const boxAnim2 = gsap
-      .timeline({
-        scrollTrigger: {
-          trigger: `#station-2 .spacer`,
-          start: 'center 80%',
-          end: 'center 55%',
-          // markers: true,
-          toggleActions: 'play reverse play reverse',
-          preventOverlaps: true,
-        },
-        onUpdate() {
-          console.log('Changing opacity 2')
-        },
-      })
-      .to('#draggable-box-2', {
-        autoAlpha: 1,
-        scale: 1,
-        duration: 0.5,
-        ease: 'elastic.out(1,0.3)',
-      })
-      .to(
-        '#draggable-box-2',
-        {
-          autoAlpha: 1,
-          ease: 'power4.inOut',
-        },
-        '<',
-      )
-
-    const boxAnim3 = gsap
-      .timeline({
-        scrollTrigger: {
-          trigger: `#station-3 .spacer`,
-          start: 'center bottom',
-          end: 'center 85%',
-          // markers: true,
-          toggleActions: 'play reverse play reverse',
-          preventOverlaps: true,
-        },
-      })
-      .to('#draggable-box-3', {
-        autoAlpha: 1,
-        scale: 1,
-        duration: 0.5,
-        ease: 'elastic.out(1,0.3)',
-      })
-      .to(
-        '#draggable-box-2',
-        {
-          autoAlpha: 1,
-          ease: 'power4.inOut',
-        },
-        '<',
-      )
-
-    const boxAnim4 = gsap
-      .timeline({
-        scrollTrigger: {
-          trigger: `#station-4 .spacer`,
-          start: 'top center+=20%',
-          end: 'top center',
-          // markers: true,
-          toggleActions: 'play reverse play reverse',
-          preventOverlaps: true,
-        },
-      })
-      .to('#draggable-box-4', {
-        autoAlpha: 1,
-        scale: 1,
-        duration: 0.5,
-        ease: 'elastic.out(1,0.3)',
-      })
-      .to(
-        '#draggable-box-4',
-        {
-          autoAlpha: 1,
-          ease: 'power4.inOut',
-        },
-        '<',
-      )
-
-    const boxAnim5 = gsap
-      .timeline({
-        scrollTrigger: {
-          trigger: `#station-5 .spacer`,
-          start: 'top bottom-=10%',
-          end: 'top bottom-=40%',
-          // markers: true,
-          toggleActions: 'play reverse play reverse',
-          preventOverlaps: true,
-        },
-      })
-      .to('#draggable-box-5', {
-        autoAlpha: 1,
-        scale: 1,
-        duration: 0.5,
-        ease: 'elastic.out(1,0.3)',
-      })
-      .to(
-        '#draggable-box-5',
-        {
-          autoAlpha: 1,
-          ease: 'power4.inOut',
-        },
-        '<',
-      )
-
-    // nav buttons
-    //
-    // gsap.utils.toArray('.navigation a').forEach(link => {
-    //   const l = link as HTMLAnchorElement
-    //   l.addEventListener('click', e => {
-    //     e.preventDefault()
-    //     const scrTo = l.getAttribute('data-scroll-to') || '0'
-    //     const labelPos = mainTimeline.scrollTrigger!.labelToScroll(scrTo)
-    //
-    //     // lenis.scrollTo(labelPos)
-    //     console.log(labelPos)
-    //     gsap.to(window, {
-    //       scrollTo: labelPos,
-    //       duration: 1,
-    //       ease: 'power3.inOut',
-    //     })
-    //   })
-    // })
-  },
-)
-
-console.log('\n\nTEST\n\n')
+  setupEvents() {}
+}
