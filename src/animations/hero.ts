@@ -2,34 +2,6 @@ import gsap from 'gsap'
 import { CONFIG } from '../config'
 import { $ } from '../utils'
 
-const DATA = [
-  {
-    name: 'Nexio Fridge v1.0',
-    size: '80x80',
-    gigs: 500,
-  },
-  {
-    name: 'CoolTech Refrigerator',
-    size: '90x90',
-    gigs: 750,
-  },
-  {
-    name: 'FrostMaster 3000',
-    size: '85x85',
-    gigs: 600,
-  },
-  {
-    name: 'IceCube Pro',
-    size: '95x95',
-    gigs: 1000,
-  },
-  {
-    name: '2PAC Pro',
-    size: '69x420',
-    gigs: 1000,
-  },
-]
-
 class FridgeHoverAnim {
   currIdx: number
   fridges: HTMLElement[]
@@ -80,13 +52,12 @@ class FridgeHoverAnim {
   }
 
   handleClick(link: HTMLElement, isDesktop: boolean) {
-    const idx = Number(link.getAttribute('data-fridge-id')) || 1
+    const idx = Number(link.getAttribute('data-fridge-id'))
     const labelPos = window.app.mainTimeline.scrollTrigger!.labelToScroll(
       (idx - 1).toString(),
     )
 
     hideHero(isDesktop)
-    console.log(labelPos)
     gsap.to(window, {
       scrollTo: labelPos,
       duration: 1,
@@ -95,7 +66,7 @@ class FridgeHoverAnim {
   }
 
   handleHover(link: HTMLElement, isDesktop: boolean) {
-    const newIdx = Number(link.getAttribute('data-fridge-id')) || 1
+    const newIdx = Number(link.getAttribute('data-fridge-id'))
 
     if (newIdx === this.currIdx) return
 
@@ -176,7 +147,7 @@ class FridgeHoverAnim {
   updateSpecificationBox(index: number) {
     if (!this.specBox) return
 
-    const data = DATA[index]
+    const data = CONFIG.heroData[index - 1]
     if (!data) return
 
     const nameElement = this.specBox.querySelector('.large-box .display')

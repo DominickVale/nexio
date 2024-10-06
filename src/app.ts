@@ -1,7 +1,7 @@
 import gsap from 'gsap'
 import { CONFIG } from './config'
 import './style.css'
-import { setupShowFactoriesAnimations } from './animations/show-factories'
+import { setupStations } from './animations/stations'
 import { setupHeroAnimations } from './animations/hero'
 // import Lenis from 'lenis'
 // import Snap from 'lenis/snap'
@@ -52,6 +52,7 @@ export default class App {
 
         // setupShowFactoriesAnimations(isDesktop, isMobile, reduceMotion)
         setupHeroAnimations(isDesktop, isMobile, reduceMotion)
+        setupStations(isDesktop, isMobile, reduceMotion)
 
         this.mainTimeline = gsap.timeline({
           scrollTrigger: {
