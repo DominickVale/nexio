@@ -39,6 +39,14 @@ const config = {
       gigs: 1000,
     },
   ],
+  stations: [
+    'welcome to nexio',
+    'scale with us',
+    'start building',
+    'docs & devnet',
+    'join our community'
+  ],
+  typewriterChars: 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+{}[]|\\:<>?,./`~;',
 }
 merge(config, window.NEXIO_CONFIG)
 

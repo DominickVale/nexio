@@ -3,6 +3,7 @@ import { CONFIG } from './config'
 import './style.css'
 import { setupStations } from './animations/stations'
 import { setupHeroAnimations } from './animations/hero'
+import { debounce } from 'lodash'
 // import Lenis from 'lenis'
 // import Snap from 'lenis/snap'
 
@@ -23,6 +24,10 @@ import { setupHeroAnimations } from './animations/hero'
 //   lerp: 0.07,
 // })
 
+interface BoxAnimation {
+  label: number
+  tl: gsap.core.Timeline
+}
 export default class App {
   heroShown: boolean
   mainTimeline: gsap.core.Timeline
@@ -54,6 +59,60 @@ export default class App {
         setupHeroAnimations(isDesktop, isMobile, reduceMotion)
         setupStations(isDesktop, isMobile, reduceMotion)
 
+        const boxAnimations: BoxAnimation[] = []
+        let currentAnimation: BoxAnimation | null = null
+        let lastAnimatedLabel = 0
+        const threshold = 0.001 // Adjust this value to control when the next box fades in
+
+        const animateBox = (labelToScroll: number) => {
+          const newAnimation = boxAnimations[labelToScroll - 1]
+
+          if (
+            newAnimation &&
+            (labelToScroll !== lastAnimatedLabel ||
+              newAnimation.tl.progress() === 0)
+          ) {
+            if (currentAnimation && currentAnimation !== newAnimation) {
+              currentAnimation.tl.reverse()
+            }
+
+            if (
+              newAnimation.tl.reversed() ||
+              newAnimation.tl.progress() === 0
+            ) {
+              newAnimation.tl.play()
+            }
+
+            currentAnimation = newAnimation
+
+            gsap
+              .timeline()
+              .to('#active-station-button .label', {
+                typewrite: {
+                  value: 'station ' + labelToScroll,
+                  speed: 0.2,
+                  maxScrambleChars: 3,
+                },
+                ease: 'power4.out',
+              })
+              .to(
+                '#active-station-button .title',
+                {
+                  typewrite: {
+                    value: CONFIG.stations[labelToScroll - 1],
+                    speed: 0.3,
+                    maxScrambleChars: 3,
+                  },
+                  ease: 'power4.out',
+                },
+                '<+30%',
+              )
+
+            lastAnimatedLabel = labelToScroll
+          }
+        }
+
+        // Create the main timeline with ScrollTrigger
         this.mainTimeline = gsap.timeline({
           scrollTrigger: {
             trigger: '#station-1',
@@ -61,16 +120,33 @@ export default class App {
             start: 'top top',
             end: 'bottom top',
             scrub: 2,
-            // markers: true,
             snap: {
               snapTo: 'labelsDirectional',
               duration: { min: 0.8, max: 1 },
-              ease: 'power4.out',
+              ease: 'power2.out',
               delay: 0,
               inertia: false,
+              directional: false,
+            },
+            onUpdate: (self: ScrollTrigger) => {
+              const progress = self.progress
+              const labelToScroll = Math.round(progress * 5) + 1
+              const distance = Math.abs(progress - (labelToScroll - 1) / 5)
+
+              if (distance < threshold) {
+                animateBox(labelToScroll)
+              } else if (
+                currentAnimation &&
+                labelToScroll !== lastAnimatedLabel
+              ) {
+                // Reverse the current animation when scrolling away
+                currentAnimation.tl.reverse()
+                currentAnimation = null
+              }
             },
           },
         })
+
         // [x: () => x, yPercent] @todo: find ratios if video sizes will be same
         const positionsAnimations = isMobile
           ? [
@@ -90,82 +166,30 @@ export default class App {
               [],
             ]
 
-        // build animations
         positionsAnimations.forEach((pos, i) => {
           const id = i + 1
           const boxId = '#draggable-box-' + id
           const [x, yPercent] = pos
           if (x && yPercent) {
-            // set box opacity
-            console.log('setting ', boxId, 'opacity 0')
-            gsap.set(boxId, {
-              autoAlpha: 0,
-            })
+            gsap.set(boxId, { autoAlpha: 0 })
 
-            // scrolling animation (factories)
-            const fTl = gsap.timeline().to(selectors.factoriesContainer, {
-              x,
-              yPercent,
-            })
-
+            const fTl = gsap
+              .timeline()
+              .to(selectors.factoriesContainer, { x, yPercent })
             this.mainTimeline.addLabel(id.toString()).add(fTl)
 
-            // draggable boxes animations
-            gsap
-              .timeline({
-                scrollTrigger: {
-                  trigger: `#station-${id}`,
-                  start: 'center 80%',
-                  end: 'center 40%',
-                  // markers: true,
-                  toggleActions: 'play reverse play reverse',
-                  preventOverlaps: true,
-                },
-              })
-              .from(`${selectors.box}-${id}`, {
-                y: () => window.innerHeight,
-                duration: 1.2,
-                ease: 'power4.inOut',
-              })
-              .to(
+            const boxAnimation = gsap
+              .timeline({ paused: true })
+              .fromTo(
                 `${selectors.box}-${id}`,
-                {
-                  autoAlpha: 1,
-                  ease: 'power4.inOut',
-                },
-                '<',
+                { y: window.innerHeight / 3, autoAlpha: 0 },
+                { y: 0, autoAlpha: 1, duration: 1.3, ease: 'power3.inOut' },
               )
+            boxAnimations.push({ label: id, tl: boxAnimation })
           } else {
             this.mainTimeline.addLabel(id.toString())
           }
         })
-
-        // build snap points
-        // positionsAnimations.forEach((_, i) => {
-        //   const id = (i + 1).toString()
-        //   const snapPos = mainTimeline.scrollTrigger!.labelToScroll(id)
-        //   snap.add(snapPos)
-        //   console.log(snapPos)
-        // })
-
-        // nav buttons
-        //
-        // gsap.utils.toArray('.navigation a').forEach(link => {
-        //   const l = link as HTMLAnchorElement
-        //   l.addEventListener('click', e => {
-        //     e.preventDefault()
-        //     const scrTo = l.getAttribute('data-scroll-to') || '0'
-        //     const labelPos = mainTimeline.scrollTrigger!.labelToScroll(scrTo)
-        //
-        //     // lenis.scrollTo(labelPos)
-        //     console.log(labelPos)
-        //     gsap.to(window, {
-        //       scrollTo: labelPos,
-        //       duration: 1,
-        //       ease: 'power3.inOut',
-        //     })
-        //   })
-        // })
       },
     )
 
