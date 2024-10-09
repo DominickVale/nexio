@@ -1,6 +1,7 @@
 import gsap from 'gsap'
 import { CONFIG } from '../config'
 import { $ } from '../utils'
+import { animateStationSection } from './stations'
 
 class FridgeHoverAnim {
   currIdx: number
@@ -11,6 +12,7 @@ class FridgeHoverAnim {
   isMobile: boolean
   isDesktop: boolean
   reduceMotion: boolean
+  hexCodeEl: HTMLElement | null
 
   constructor(isDesktop: boolean, isMobile: boolean, reduceMotion: boolean) {
     this.currIdx = 1
@@ -18,6 +20,7 @@ class FridgeHoverAnim {
     this.links = []
     this.parentElement = null
     this.specBox = null
+    this.hexCodeEl = null
     this.isDesktop = isDesktop
     this.isMobile = isMobile
     this.reduceMotion = reduceMotion
@@ -26,6 +29,7 @@ class FridgeHoverAnim {
   setup() {
     this.fridges = gsap.utils.toArray<HTMLElement>('.fridge-big-preview')
     this.links = gsap.utils.toArray<HTMLElement>('.station-nav-link')
+    this.hexCodeEl = $('#hex-code')
     this.parentElement = $('.station-nav-list')
     this.specBox = $('.specification-box')
 
@@ -42,6 +46,27 @@ class FridgeHoverAnim {
       link.addEventListener('click', () =>
         this.handleClick(link, this.isDesktop),
       )
+    })
+
+    this.hexCodeEl?.addEventListener('mouseenter', e => {
+      gsap.to(e.target, {
+        typewrite: {
+          value: ' B  T  C    M  O  V  E ',
+          speed: 0.5,
+          maxScrambleChars: 2,
+        },
+        ease: 'power4.out',
+      })
+    })
+    this.hexCodeEl?.addEventListener('mouseleave', e => {
+      gsap.to(e.target, {
+        typewrite: {
+          value: '42 54 43 20 4D 4F 56 45',
+          speed: 0.5,
+          maxScrambleChars: 2,
+        },
+        ease: 'power4.out',
+      })
     })
 
     if (this.parentElement) {
@@ -63,6 +88,9 @@ class FridgeHoverAnim {
       duration: 1,
       ease: 'power3.inOut',
     })
+    if (idx === 1) {
+      animateStationSection(0, 1)
+    }
   }
 
   handleHover(link: HTMLElement, isDesktop: boolean) {
@@ -101,7 +129,7 @@ class FridgeHoverAnim {
       },
     )
 
-    this.updateSpecificationBox(newIdx)
+    // this.updateSpecificationBox(newIdx)
 
     this.currIdx = newIdx
   }
@@ -140,26 +168,26 @@ class FridgeHoverAnim {
       },
     )
 
-    this.updateSpecificationBox(1)
+    // this.updateSpecificationBox(1)
     this.currIdx = 1
   }
 
-  updateSpecificationBox(index: number) {
-    if (!this.specBox) return
-
-    const data = CONFIG.heroData[index - 1]
-    if (!data) return
-
-    const nameElement = this.specBox.querySelector('.large-box .display')
-    const sizeElement = this.specBox.querySelector('.small-box .display.small')
-    const gigsElement = this.specBox.querySelector(
-      '.small-box:last-child .display.small',
-    )
-
-    if (nameElement) nameElement.textContent = data.name
-    if (sizeElement) sizeElement.textContent = data.size
-    if (gigsElement) gigsElement.textContent = `${data.gigs} gigs`
-  }
+  // updateSpecificationBox(index: number) {
+  //   if (!this.specBox) return
+  //
+  //   const data = CONFIG.heroData[index - 1]
+  //   if (!data) return
+  //
+  //   const nameElement = this.specBox.querySelector('.large-box .display')
+  //   const sizeElement = this.specBox.querySelector('.small-box .display.small')
+  //   const gigsElement = this.specBox.querySelector(
+  //     '.small-box:last-child .display.small',
+  //   )
+  //
+  //   if (nameElement) nameElement.textContent = data.name
+  //   if (sizeElement) sizeElement.textContent = data.size
+  //   if (gigsElement) gigsElement.textContent = `${data.gigs} gigs`
+  // }
 }
 
 ///////
@@ -179,6 +207,8 @@ export function setupHeroAnimations(
   function onClickHero(e: MouseEvent) {
     e.preventDefault()
     hideHero(isDesktop)
+
+    animateStationSection(0, 1)
   }
 
   $(selectors.heroButton)?.addEventListener('click', onClickHero)
@@ -223,10 +253,4 @@ export function hideHero(isDesktop: boolean) {
       },
       '<',
     )
-    .from(selectors.box + '-1', {
-      autoAlpha: 0,
-      y: () => window.innerHeight,
-      duration: 1.5,
-      ease: 'power3.out',
-    })
 }

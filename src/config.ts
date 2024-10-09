@@ -12,6 +12,12 @@ const config = {
     activeStationBtn: '#active-station-button .station-selection-button',
     stationLinks: '#stationLinks > a'
   },
+  animations: {
+    stations: {
+      stationSelectorSnapThreshold: 0.1,
+      boxesSnapThreshold: 0.06,
+    }
+  },
   heroData: [
     {
       name: 'Nexio Fridge v1.0',

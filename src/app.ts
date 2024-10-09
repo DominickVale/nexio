@@ -1,9 +1,10 @@
 import gsap from 'gsap'
 import { CONFIG } from './config'
 import './style.css'
-import { setupStations } from './animations/stations'
+import { animateStationSection, setupStations } from './animations/stations'
 import { setupHeroAnimations } from './animations/hero'
 import { debounce } from 'lodash'
+import { $ } from './utils'
 // import Lenis from 'lenis'
 // import Snap from 'lenis/snap'
 
@@ -24,10 +25,6 @@ import { debounce } from 'lodash'
 //   lerp: 0.07,
 // })
 
-interface BoxAnimation {
-  label: number
-  tl: gsap.core.Timeline
-}
 export default class App {
   heroShown: boolean
   mainTimeline: gsap.core.Timeline
@@ -59,37 +56,34 @@ export default class App {
         setupHeroAnimations(isDesktop, isMobile, reduceMotion)
         setupStations(isDesktop, isMobile, reduceMotion)
 
-        const boxAnimations: BoxAnimation[] = []
-        let currentAnimation: BoxAnimation | null = null
-        let lastAnimatedLabel = 0
-        const threshold = 0.001 // Adjust this value to control when the next box fades in
+        let isAnimating = false
+        let currentLabel = 1
+        let lastTypewriterLabel = 1
 
-        const animateBox = (labelToScroll: number) => {
-          const newAnimation = boxAnimations[labelToScroll - 1]
+        const animateBox = debounce(
+          (labelToScroll: number) => {
+            if (isAnimating || labelToScroll === currentLabel) return
+            isAnimating = true
 
-          if (
-            newAnimation &&
-            (labelToScroll !== lastAnimatedLabel ||
-              newAnimation.tl.progress() === 0)
-          ) {
-            if (currentAnimation && currentAnimation !== newAnimation) {
-              currentAnimation.tl.reverse()
-            }
+            animateStationSection(currentLabel, labelToScroll, () => {
+              isAnimating = false
+              currentLabel = labelToScroll
+            })
+          },
+          100,
+          { trailing: true, leading: true },
+        )
 
-            if (
-              newAnimation.tl.reversed() ||
-              newAnimation.tl.progress() === 0
-            ) {
-              newAnimation.tl.play()
-            }
+        const animateTypewriter = debounce(
+          (label: number) => {
+            if (label === lastTypewriterLabel) return
 
-            currentAnimation = newAnimation
-
+            lastTypewriterLabel = label
             gsap
               .timeline()
               .to('#active-station-button .label', {
                 typewrite: {
-                  value: 'station ' + labelToScroll,
+                  value: 'station ' + label,
                   speed: 0.2,
                   maxScrambleChars: 3,
                 },
@@ -99,7 +93,7 @@ export default class App {
                 '#active-station-button .title',
                 {
                   typewrite: {
-                    value: CONFIG.stations[labelToScroll - 1],
+                    value: CONFIG.stations[label - 1],
                     speed: 0.3,
                     maxScrambleChars: 3,
                   },
@@ -107,10 +101,10 @@ export default class App {
                 },
                 '<+30%',
               )
-
-            lastAnimatedLabel = labelToScroll
-          }
-        }
+          },
+          100,
+          { trailing: true },
+        )
 
         // Create the main timeline with ScrollTrigger
         this.mainTimeline = gsap.timeline({
@@ -131,17 +125,21 @@ export default class App {
             onUpdate: (self: ScrollTrigger) => {
               const progress = self.progress
               const labelToScroll = Math.round(progress * 5) + 1
-              const distance = Math.abs(progress - (labelToScroll - 1) / 5)
+              const exactProgressForLabel = (labelToScroll - 1) / 5
+              const distance = Math.abs(progress - exactProgressForLabel)
 
-              if (distance < threshold) {
-                animateBox(labelToScroll)
-              } else if (
-                currentAnimation &&
-                labelToScroll !== lastAnimatedLabel
+              const { boxesSnapThreshold, stationSelectorSnapThreshold } =
+                CONFIG.animations.stations
+              if (
+                !isAnimating &&
+                labelToScroll !== currentLabel &&
+                distance < boxesSnapThreshold
               ) {
-                // Reverse the current animation when scrolling away
-                currentAnimation.tl.reverse()
-                currentAnimation = null
+                animateBox(labelToScroll)
+              }
+
+              if (distance < stationSelectorSnapThreshold) {
+                animateTypewriter(labelToScroll)
               }
             },
           },
@@ -177,15 +175,6 @@ export default class App {
               .timeline()
               .to(selectors.factoriesContainer, { x, yPercent })
             this.mainTimeline.addLabel(id.toString()).add(fTl)
-
-            const boxAnimation = gsap
-              .timeline({ paused: true })
-              .fromTo(
-                `${selectors.box}-${id}`,
-                { y: window.innerHeight / 3, autoAlpha: 0 },
-                { y: 0, autoAlpha: 1, duration: 1.3, ease: 'power3.inOut' },
-              )
-            boxAnimations.push({ label: id, tl: boxAnimation })
           } else {
             this.mainTimeline.addLabel(id.toString())
           }
