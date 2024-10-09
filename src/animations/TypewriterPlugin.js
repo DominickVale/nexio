@@ -39,7 +39,7 @@ export const TypewriterPlugin = {
     data.text = text
     data._props.push('text')
     data.maxScrambleChars = props.maxScrambleChars || 4
-    data.charClass = props.charClass
+    data.charClass = props.charClass || "typewriter-char"
     data.duration = tween.vars.duration
     tween.typewriter = data // this is specific to the Typewriter.ts implementation
     const oldOnInterrupt = tween.vars.onInterrupt

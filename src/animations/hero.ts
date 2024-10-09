@@ -49,21 +49,25 @@ class FridgeHoverAnim {
     })
 
     this.hexCodeEl?.addEventListener('mouseenter', e => {
-      gsap.to(e.target, {
+      e.stopPropagation()
+      e.preventDefault()
+      gsap.to('#hex-code .hex', {
         typewrite: {
           value: ' B  T  C    M  O  V  E ',
-          speed: 0.5,
+          duration: 0.7,
           maxScrambleChars: 2,
         },
         ease: 'power4.out',
       })
     })
     this.hexCodeEl?.addEventListener('mouseleave', e => {
-      gsap.to(e.target, {
+      e.stopPropagation()
+      e.preventDefault()
+      gsap.to('#hex-code .hex', {
         typewrite: {
           value: '42 54 43 20 4D 4F 56 45',
-          speed: 0.5,
           maxScrambleChars: 2,
+          duration: 0.7,
         },
         ease: 'power4.out',
       })
@@ -212,7 +216,7 @@ export function setupHeroAnimations(
   }
 
   $(selectors.heroButton)?.addEventListener('click', onClickHero)
-  $(selectors.heroButton + '-mobile')?.addEventListener('click', onClickHero)
+  $(selectors.heroButtonMobile)?.addEventListener('click', onClickHero)
 }
 
 //
@@ -221,6 +225,7 @@ export function setupHeroAnimations(
 
 export function hideHero(isDesktop: boolean) {
   const { selectors } = CONFIG
+  window.app.heroShown = false
   gsap
     .timeline()
     .set('body', { overflow: 'auto' })
@@ -245,7 +250,7 @@ export function hideHero(isDesktop: boolean) {
         '--top': '100vh',
       },
       {
-        '--left': isDesktop ? '100vw' : '115vw',
+        '--left': isDesktop ? '100.5vw' : '115vw',
         '--max-left': isDesktop ? '35vw' : '40vw',
         '--top': isDesktop ? '-2vh' : '5vh',
         duration: 1.5,
@@ -254,3 +259,6 @@ export function hideHero(isDesktop: boolean) {
       '<',
     )
 }
+
+//@ts-ignore just for debugging
+window.hideHero = hideHero

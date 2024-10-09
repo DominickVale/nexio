@@ -4,7 +4,9 @@ import './style.css'
 import { animateStationSection, setupStations } from './animations/stations'
 import { setupHeroAnimations } from './animations/hero'
 import { debounce } from 'lodash'
-import { $ } from './utils'
+import { $, $all } from './utils'
+import { setupPreloader } from './animations/preloader'
+import { setupCustomCursor } from './animations/cursor'
 // import Lenis from 'lenis'
 // import Snap from 'lenis/snap'
 
@@ -28,18 +30,20 @@ import { $ } from './utils'
 export default class App {
   heroShown: boolean
   mainTimeline: gsap.core.Timeline
+  videos: NodeListOf<HTMLVideoElement> | null
 
   constructor() {
-    this.heroShown = false
+    this.heroShown = true
     this.mainTimeline = gsap.timeline()
+    this.videos = null
     window.app = this
     this.init()
-    this.setupEvents()
   }
 
   init() {
     const mm = gsap.matchMedia(),
       breakpoint = 768
+    console.log(this.videos)
 
     mm.add(
       {
@@ -52,9 +56,12 @@ export default class App {
           context.conditions as gsap.Conditions
         const { selectors } = CONFIG
 
-        // setupShowFactoriesAnimations(isDesktop, isMobile, reduceMotion)
+        // setupPreloader(isDesktop, isMobile, reduceMotion)
         setupHeroAnimations(isDesktop, isMobile, reduceMotion)
         setupStations(isDesktop, isMobile, reduceMotion)
+        setupCustomCursor()
+
+        this.videos = $all('video') as NodeListOf<HTMLVideoElement>
 
         let isAnimating = false
         let currentLabel = 1
@@ -64,6 +71,16 @@ export default class App {
           (labelToScroll: number) => {
             if (isAnimating || labelToScroll === currentLabel) return
             isAnimating = true
+
+            if (this.videos) {
+              console.log(
+                'Played video:',
+                labelToScroll - 1,
+                this.videos[labelToScroll - 1],
+              )
+
+              this.videos[labelToScroll - 1].play()
+            }
 
             animateStationSection(currentLabel, labelToScroll, () => {
               isAnimating = false
@@ -166,10 +183,10 @@ export default class App {
 
         positionsAnimations.forEach((pos, i) => {
           const id = i + 1
-          const boxId = '#draggable-box-' + id
+
           const [x, yPercent] = pos
           if (x && yPercent) {
-            gsap.set(boxId, { autoAlpha: 0 })
+            // gsap.set(`${selectors.station}-${id} ${selectors.stationBoxes} > *`, { autoAlpha: 0 })
 
             const fTl = gsap
               .timeline()
@@ -186,6 +203,4 @@ export default class App {
       console.log('[DEBUG]: NEXIOS_CONFIG: ', CONFIG)
     }
   }
-
-  setupEvents() {}
 }

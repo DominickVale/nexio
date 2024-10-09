@@ -4,7 +4,7 @@ body {
 }
 
 #factories-animations-container {
-  --left: 300vw; /* should animate to 100vw to be shown*/
+  --left: 300vw; /* should animate to 100.5vw to be shown*/
   --max-left: 200vw;
   --top: 100vh; /* should animate to -2vh */
   position: fixed;
@@ -55,32 +55,77 @@ body {
   position: relative;
 }
 
-#draggable-box-1 {
-  position: fixed;
-  top: 17vh;
-  left: 12vw;
-}
-#draggable-box-2 {
-  position: fixed;
-  top: 18vh;
-  left: 5vw;
-}
-#draggable-box-3 {
-  position: fixed;
-  top: 20vh;
-  left: 5vw;
-}
-#draggable-box-4 {
-  position: fixed;
-  top: 20vh;
-  left: 5vw;
-}
-#draggable-box-5 {
-  position: fixed;
-  top: 22vh;
-  left: 5vw;
-}
-
+/* #white-text-box-1 { */
+/*   position: fixed; */
+/*   top: 27vh; */
+/*   left: 8vw; */
+/* } */
+/**/
+/* #white-text-box-2 { */
+/*   position: fixed; */
+/*   top: 14vh; */
+/*   left: 6vw; */
+/* } */
+/**/
+/* #white-text-box-3 { */
+/*   position: fixed; */
+/*   top: 16vh; */
+/*   left: 4vw; */
+/* } */
+/**/
+/* #white-text-box-4 { */
+/*   position: fixed; */
+/*   top: 15vh; */
+/*   left: 6vw; */
+/* } */
+/* #white-text-box-5 { */
+/*   position: fixed; */
+/*   top: 16vh; */
+/*   left: 5vw; */
+/* } */
+/**/
+/* #draggable-box-1 { */
+/*   position: fixed; */
+/*   top: 52vh; */
+/*   left: 14vw; */
+/* } */
+/* #draggable-box-2 { */
+/*   position: fixed; */
+/*   top: 68vh; */
+/*   left: 23vw; */
+/* } */
+/* #draggable-box-3 { */
+/*   position: fixed; */
+/*   top: 40vh; */
+/*   left: 10vw; */
+/* } */
+/* #draggable-box-4 { */
+/*   position: fixed; */
+/*   top: 38vh; */
+/*   left: 8vw; */
+/* } */
+/* #draggable-box-5 { */
+/*   position: fixed; */
+/*   top: 35vh; */
+/*   left: 6vw; */
+/* } */
+/* #draggable-box-6 { */
+/*   position: fixed; */
+/*   top: 62vh; */
+/*   left: 29vw; */
+/* } */
+/* #partner-marquis { */
+/*   position: fixed; */
+/*   top: 56vh; */
+/*   left: 7vw; */
+/*   bottom: unset; */
+/* } */
+/* #community-buttons { */
+/*   position: fixed; */
+/*   top: 72vh; */
+/*   left: 9vw; */
+/*   bottom: unset; */
+/* } */
 
 .station-1 {
   outline: 1px solid red;
@@ -138,17 +183,140 @@ body {
     right: -48vh;
   }
 
-  /* #draggable-box-1, */
-  /* #draggable-box-2, */
-  /* #draggable-box-3, */
-  /* #draggable-box-4, */
+  /* #white-text-box-1 { */
+  /*   position: fixed; */
+  /*   top: 55vh; */
+  /*   left: 2rem; */
+  /* } */
+  /**/
+  /* #white-text-box-2 { */
+  /*   position: fixed; */
+  /*   top: 48vh; */
+  /*   left: 2rem */
+  /* } */
+  /**/
+  /* #white-text-box-3 { */
+  /*   position: fixed; */
+  /*   top: 16vh; */
+  /*   left: 2rem */
+  /* } */
+  /**/
+  /* #white-text-box-4 { */
+  /*   position: fixed; */
+  /*   top: 15vh; */
+  /*   left: 2rem */
+  /* } */
+  /* #white-text-box-5 { */
+  /*   position: fixed; */
+  /*   top: 16vh; */
+  /*   left: 2rem */
+  /* } */
+  /**/
+  /* #draggable-box-1 { */
+  /*   position: fixed; */
+  /*   top: 75vh; */
+  /*   left: 1.45rem; */
+  /* } */
+  /* #draggable-box-2 { */
+  /*   position: fixed; */
+  /*   top: 84vh; */
+  /*   left: 1.45rem; */
+  /* } */
+  /* #draggable-box-3 { */
+  /*   position: fixed; */
+  /*   top: 71vh; */
+  /*   left: 1.45rem; */
+  /* } */
+  /* #draggable-box-4 { */
+  /*   position: fixed; */
+  /*   top: 38vh; */
+  /*   left: 1.45rem; */
+  /* } */
   /* #draggable-box-5 { */
   /*   position: fixed; */
-  /*   top: unset; */
-  /*   left: 1.3rem; */
-  /*   right: 1.3rem; */
-  /*   bottom: 1.3rem; */
-  /*   width: 85vw; */
-  /*   height: 33vh; */
+  /*   top: 35vh; */
+  /*   left: 1.45rem; */
   /* } */
+  /* #draggable-box-6 { */
+  /*   position: fixed; */
+  /*   top: 62vh; */
+  /*   left: 1.45rem; */
+  /* } */
+  /* #partner-marquis { */
+  /*   position: fixed; */
+  /*   top: 56vh; */
+  /*   left: 1.45rem; */
+  /*   bottom: unset; */
+  /* } */
+  /* #community-buttons { */
+  /*   position: fixed; */
+  /*   top: 72vh; */
+  /*   left: 1.45rem; */
+  /*   bottom: unset; */
+  /* } */
+}
+
+.typewriter-char {
+  pointer-events: none;
+}
+
+#custom-cursor {
+  position: fixed;
+  display: block !important;
+  pointer-events: none;
+  z-index: 9999;
+  transform-origin: 50% 50%;
+  transform: translate(-50%, -50%);
+}
+
+#custom-cursor svg,
+#custom-cursor svg path {
+  stroke: var(--tertiary);
+  fill: var(--secondary);
+  transition: all 0.3s;
+}
+
+#custom-cursor.blueprint.is-hovered svg {
+  path {
+    fill: white;
+    stroke: transparent;
+  }
+  transform: scale(1.25);
+}
+
+#custom-cursor.blueprint svg path {
+  stroke: white;
+  fill: none;
+}
+
+#custom-cursor.drag svg path {
+  stroke: var(--tertiary);
+  fill: none;
+}
+
+#custom-cursor.drag.is-hovered svg {
+  path {
+    fill: var(--secondary);
+  }
+  transform: scale(1.2) rotate(60deg);
+}
+
+#custom-cursor.is-hovered svg {
+  transform: rotate(60deg) scale(1.5);
+  path {
+    fill: var(--secondary);
+    stroke: var(--secondary);
+  }
+}
+
+html,
+body,
+* {
+  cursor: none !important;
+}
+
+video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }

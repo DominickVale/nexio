@@ -4,13 +4,20 @@ const config = {
   debug: true,
   selectors: {
     box: '#draggable-box',
+    cursor: "#custom-cursor",
+    cursorHoverables: ['button', 'a', '#active-station-button'],
+    boxClass: '.draggable-box',
     hero: '#hero',
     heroButton: '#hero-button',
+    heroButtonMobile: '#hero-button-tablet',
     factoriesContainer: '#factories-animations-container',
     activeStationWrapper: '#station-selection',
     activeStationDropdown: '#stationLinks',
     activeStationBtn: '#active-station-button .station-selection-button',
-    stationLinks: '#stationLinks > a'
+    station: "#station",
+    stationLinks: '#stationLinks > a',
+    stationTitle: '#white-text-box',
+    stationBoxes: '.station-boxes'
   },
   animations: {
     stations: {
