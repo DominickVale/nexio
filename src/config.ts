@@ -25,6 +25,9 @@ const config = {
     stations: {
       stationSelectorSnapThreshold: 0.1,
       boxesSnapThreshold: 0.06,
+      boxesDuration: 1,
+      boxesStaggerIn: 0.1,
+      boxesStaggerOut: 0.01,
     }
   },
   heroData: [

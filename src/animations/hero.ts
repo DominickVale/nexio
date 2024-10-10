@@ -93,7 +93,7 @@ class FridgeHoverAnim {
       ease: 'power3.inOut',
     })
     if (idx === 1) {
-      animateStationSection(0, 1)
+      animateStationSection(1)
     }
   }
 
@@ -212,7 +212,7 @@ export function setupHeroAnimations(
     e.preventDefault()
     hideHero(isDesktop)
 
-    animateStationSection(0, 1)
+    animateStationSection(1)
   }
 
   $(selectors.heroButton)?.addEventListener('click', onClickHero)

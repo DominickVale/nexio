@@ -63,33 +63,7 @@ export default class App {
 
         this.videos = $all('video') as NodeListOf<HTMLVideoElement>
 
-        let isAnimating = false
-        let currentLabel = 1
         let lastTypewriterLabel = 1
-
-        const animateBox = debounce(
-          (labelToScroll: number) => {
-            if (isAnimating || labelToScroll === currentLabel) return
-            isAnimating = true
-
-            if (this.videos) {
-              console.log(
-                'Played video:',
-                labelToScroll - 1,
-                this.videos[labelToScroll - 1],
-              )
-
-              // this.videos[labelToScroll - 1].play()
-            }
-
-            animateStationSection(currentLabel, labelToScroll, () => {
-              isAnimating = false
-              currentLabel = labelToScroll
-            })
-          },
-          100,
-          { trailing: true, leading: true },
-        )
 
         const animateTypewriter = debounce(
           (label: number) => {
@@ -123,6 +97,9 @@ export default class App {
           { trailing: true },
         )
 
+        let currentActiveStation = 0
+        let currentAnimation: gsap.core.Timeline | null = null
+
         // Create the main timeline with ScrollTrigger
         this.mainTimeline = gsap.timeline({
           scrollTrigger: {
@@ -139,24 +116,26 @@ export default class App {
               inertia: false,
               directional: false,
             },
-            onUpdate: (self: ScrollTrigger) => {
-              const progress = self.progress
-              const labelToScroll = Math.round(progress * 5) + 1
-              const exactProgressForLabel = (labelToScroll - 1) / 5
-              const distance = Math.abs(progress - exactProgressForLabel)
+            onUpdate: self => {
+              const progress = self.progress * 5 
+              const currentSection = Math.floor(progress)
+              const sectionProgress = progress - currentSection
 
-              const { boxesSnapThreshold, stationSelectorSnapThreshold } =
-                CONFIG.animations.stations
-              if (
-                !isAnimating &&
-                labelToScroll !== currentLabel &&
-                distance < boxesSnapThreshold
-              ) {
-                animateBox(labelToScroll)
+              let targetSection
+              if (self.getVelocity() > 0) {
+                targetSection =
+                  sectionProgress >= 0.5 ? currentSection + 1 : currentSection
+              } else {
+                targetSection =
+                  sectionProgress <= 0.5 ? currentSection : currentSection + 1
               }
 
-              if (distance < stationSelectorSnapThreshold) {
-                animateTypewriter(labelToScroll)
+              if (targetSection >= 0 && targetSection <= positionsAnimations.length) {
+                const newStationNumber = targetSection + 1
+                if (currentActiveStation !== newStationNumber) {
+                  triggerStationAnimation(newStationNumber)
+                  animateTypewriter(newStationNumber)
+                }
               }
             },
           },
@@ -186,7 +165,10 @@ export default class App {
 
           const [x, yPercent] = pos
           if (x && yPercent) {
-            gsap.set(`${selectors.station}-${id} ${selectors.stationBoxes} > *`, { autoAlpha: 0 })
+            gsap.set(
+              `${selectors.station}-${id} ${selectors.stationBoxes} > *`,
+              { autoAlpha: 0 },
+            )
 
             const fTl = gsap
               .timeline()
@@ -196,6 +178,52 @@ export default class App {
             this.mainTimeline.addLabel(id.toString())
           }
         })
+
+        function triggerStationAnimation(newStationNumber: number) {
+          const oldStation = `${selectors.station}-${currentActiveStation} ${selectors.stationBoxes} > *`
+          const newStation = `${selectors.station}-${newStationNumber} ${selectors.stationBoxes} > *`
+          const { boxesDuration, boxesStaggerIn, boxesStaggerOut } = CONFIG.animations.stations
+
+          if (currentAnimation) {
+            currentAnimation.progress(1).kill()
+          }
+
+          currentAnimation = gsap.timeline()
+
+          if (currentActiveStation) {
+            currentAnimation.to(oldStation, {
+              y:
+                newStationNumber > currentActiveStation
+                  ? -window.innerHeight / 4
+                  : window.innerHeight / 4,
+              autoAlpha: 0,
+              duration: boxesDuration,
+              ease: 'power3.out',
+              stagger: boxesStaggerOut,
+            })
+          }
+
+          currentAnimation.fromTo(
+            newStation,
+            {
+              y:
+                newStationNumber > currentActiveStation
+                  ? window.innerHeight / 4
+                  : -window.innerHeight / 4,
+              autoAlpha: 0,
+            },
+            {
+              y: 0,
+              autoAlpha: 1,
+              duration: boxesDuration,
+              ease: 'power3.out',
+              stagger: boxesStaggerIn,
+            },
+            currentActiveStation ? '>-0.25' : 0,
+          )
+
+          currentActiveStation = newStationNumber
+        }
       },
     )
 

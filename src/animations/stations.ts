@@ -4,56 +4,29 @@ import StationSelector from './station-selector'
 import { $ } from '../utils'
 import { CONFIG } from '../config'
 
-// @TODO: optimize, get gsap animations out of evt handlers
-export function animateStationSection(
-  currentID: number,
-  newStationID: number,
-  onComplete?: () => void,
-) {
+//@TODO: dry
+export function animateStationSection(id: number, onComplete?: () => void) {
   const { selectors } = CONFIG
-  const tl = gsap.timeline({
-    onComplete,
-  })
-  console.log('Animating: ', currentID, newStationID)
+  const { boxesDuration, boxesStaggerIn } = CONFIG.animations.stations
+  const station = `${selectors.station}-${id} ${selectors.stationBoxes} > *`
 
-  const oldStation = `${selectors.station}-${currentID} ${selectors.stationBoxes} > *`
-  const newStation = `${selectors.station}-${newStationID} ${selectors.stationBoxes} > *`
+  const currentAnimation = gsap.timeline()
 
-  if (currentID > 0) {
-    // Animaions out
-    tl.to(oldStation, {
-      y:
-        newStationID > currentID
-          ? -window.innerHeight / 4
-          : window.innerHeight / 4,
+  currentAnimation.fromTo(
+    station,
+    {
+      y: window.innerHeight / 4,
       autoAlpha: 0,
-      duration: 1,
+    },
+    {
+      y: 0,
+      autoAlpha: 1,
+      duration: boxesDuration,
       ease: 'power3.out',
-      stagger: 0.1
-    })
-  }
-
-  if (newStationID <= 5) {
-    // Animations In
-
-    tl.fromTo(
-      newStation,
-      {
-        y:
-          newStationID > currentID
-            ? window.innerHeight / 4
-            : -window.innerHeight / 4,
-        autoAlpha: 0,
-      },
-      {
-        y: 0,
-        autoAlpha: 1,
-        duration: 1.5,
-        ease: 'power3.out',
-        stagger: 0.2,
-      },
-    )
-  }
+      stagger: boxesStaggerIn,
+      onComplete,
+    },
+  )
 }
 
 function setupDraggableBoxes() {
