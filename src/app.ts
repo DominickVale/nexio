@@ -1,12 +1,11 @@
 import gsap from 'gsap'
+import { debounce } from 'lodash'
+import { CustomCursor } from './animations/cursor'
+import { setupHeroAnimations } from './animations/hero'
+import { setupStations } from './animations/stations'
 import { CONFIG } from './config'
 import './style.css'
-import { animateStationSection, setupStations } from './animations/stations'
-import { setupHeroAnimations } from './animations/hero'
-import { debounce } from 'lodash'
-import { $, $all } from './utils'
-import { setupPreloader } from './animations/preloader'
-import { setupCustomCursor } from './animations/cursor'
+import { $all } from './utils'
 // import Lenis from 'lenis'
 // import Snap from 'lenis/snap'
 
@@ -31,19 +30,23 @@ export default class App {
   heroShown: boolean
   mainTimeline: gsap.core.Timeline
   videos: NodeListOf<HTMLVideoElement> | null
+  cursor: CustomCursor
 
   constructor() {
     this.heroShown = true
     this.mainTimeline = gsap.timeline()
     this.videos = null
     window.app = this
+    this.cursor = new CustomCursor({
+      cursorId: CONFIG.selectors.cursor,
+      hoverSelectors: CONFIG.selectors.cursorHoverables,
+    })
     this.init()
   }
 
   init() {
     const mm = gsap.matchMedia(),
       breakpoint = 768
-    console.log(this.videos)
 
     mm.add(
       {
@@ -59,9 +62,13 @@ export default class App {
         // setupPreloader(isDesktop, isMobile, reduceMotion)
         setupHeroAnimations(isDesktop, isMobile, reduceMotion)
         setupStations(isDesktop, isMobile, reduceMotion)
-        setupCustomCursor()
 
         this.videos = $all('video') as NodeListOf<HTMLVideoElement>
+
+        this.videos.forEach(v => {
+          v.pause()
+        })
+        console.log(this.videos)
 
         let lastTypewriterLabel = 1
 
@@ -99,6 +106,7 @@ export default class App {
 
         let currentActiveStation = 0
         let currentAnimation: gsap.core.Timeline | null = null
+        let lastDirection: 'up' | 'down' = 'down'
 
         // Create the main timeline with ScrollTrigger
         this.mainTimeline = gsap.timeline({
@@ -135,6 +143,8 @@ export default class App {
                 targetSection <= positionsAnimations.length
               ) {
                 const newStationNumber = targetSection + 1
+                lastDirection =
+                  newStationNumber > currentActiveStation ? 'down' : 'up'
                 if (currentActiveStation !== newStationNumber) {
                   triggerStationAnimation(newStationNumber)
                   animateTypewriter(newStationNumber)
@@ -227,13 +237,28 @@ export default class App {
             currentActiveStation ? '>-0.25' : 0,
           )
 
+          gsap.utils.toArray<HTMLVideoElement>('video').forEach((v, i) => {
+            const idx = i + 1
+            const prev =
+              lastDirection === 'up' ? newStationNumber : currentActiveStation
+            const next =
+              lastDirection === 'down' ? newStationNumber : newStationNumber - 1
+
+            if (idx === prev || idx === next) {
+              v.play()
+              v.loop = true
+            } else {
+              v.currentTime = 0
+              v.pause()
+            }
+          })
           currentActiveStation = newStationNumber
         }
       },
     )
 
     if (CONFIG.debug) {
-      console.log('[DEBUG]: NEXIOS_CONFIG: ', CONFIG)
+      console.log('[NEXIO]: NEXIOS_CONFIG: ', CONFIG)
     }
   }
 }

@@ -49,7 +49,7 @@ export class CustomCursor {
     this.rafId = requestAnimationFrame(this.updateCursorPosition.bind(this))
   }
 
-  private onMouseMove(e: MouseEvent): void {
+  public onMouseMove(e: MouseEvent): void {
     this.mouseX = e.clientX
     this.mouseY = e.clientY
   }
@@ -112,11 +112,4 @@ export class CustomCursor {
     }
     window.removeEventListener('mousemove', this.onMouseMove)
   }
-}
-
-export function setupCustomCursor() {
-  const cursor = new CustomCursor({
-    cursorId: CONFIG.selectors.cursor,
-    hoverSelectors: CONFIG.selectors.cursorHoverables,
-  })
 }

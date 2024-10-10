@@ -37,10 +37,13 @@ function setupDraggableBoxes() {
     Draggable.create(target, {
       trigger: button,
       type: 'x,y',
-      onDrag: function() {
+      onDragStart: () => window.app.cursor.setState("drag"),
+      onDrag: function(e) {
         target.style.setProperty('--drag-x', `${this.x}px`);
         target.style.setProperty('--drag-y', `${this.y}px`);
-      }
+        window.app.cursor.onMouseMove(e)
+      },
+      onDragEnd: () => window.app.cursor.setState("default")
     })
   })
 }
