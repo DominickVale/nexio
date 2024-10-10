@@ -94,6 +94,7 @@ class FridgeHoverAnim {
     })
     if (idx === 1) {
       animateStationSection(1)
+      window.app.updateVideos('up', 1, 2)
     }
   }
 
@@ -213,6 +214,7 @@ export function setupHeroAnimations(
     hideHero(isDesktop)
 
     animateStationSection(1)
+    window.app.updateVideos('up', 1, 2)
   }
 
   $(selectors.heroButton)?.addEventListener('click', onClickHero)

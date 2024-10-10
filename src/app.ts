@@ -192,7 +192,7 @@ export default class App {
           }
         })
 
-        function triggerStationAnimation(newStationNumber: number) {
+        const triggerStationAnimation = (newStationNumber: number) => {
           const oldStation = `${selectors.station}-${currentActiveStation} ${selectors.stationBoxes} > *`
           const newStation = `${selectors.station}-${newStationNumber} ${selectors.stationBoxes} > *`
           const { boxesDuration, boxesStaggerIn, boxesStaggerOut } =
@@ -237,21 +237,7 @@ export default class App {
             currentActiveStation ? '>-0.25' : 0,
           )
 
-          gsap.utils.toArray<HTMLVideoElement>('video').forEach((v, i) => {
-            const idx = i + 1
-            const prev =
-              lastDirection === 'up' ? newStationNumber : currentActiveStation
-            const next =
-              lastDirection === 'down' ? newStationNumber : newStationNumber - 1
-
-            if (idx === prev || idx === next) {
-              v.play()
-              v.loop = true
-            } else {
-              v.currentTime = 0
-              v.pause()
-            }
-          })
+          this.updateVideos(lastDirection, newStationNumber, currentActiveStation)
           currentActiveStation = newStationNumber
         }
       },
@@ -260,5 +246,21 @@ export default class App {
     if (CONFIG.debug) {
       console.log('[NEXIO]: NEXIOS_CONFIG: ', CONFIG)
     }
+  }
+
+  updateVideos(direction: 'up' | 'down', newId: number, currIdx: number) {
+    gsap.utils.toArray<HTMLVideoElement>('video').forEach((v, i) => {
+      const idx = i + 1
+      const prev = direction === 'up' ? newId : currIdx
+      const next = direction === 'down' ? newId : newId - 1
+
+      if (idx === prev || idx === next) {
+        v.play()
+        v.loop = true
+      } else {
+        v.currentTime = 0
+        v.pause()
+      }
+    })
   }
 }
