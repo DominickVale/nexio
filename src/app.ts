@@ -79,7 +79,7 @@ export default class App {
                 this.videos[labelToScroll - 1],
               )
 
-              this.videos[labelToScroll - 1].play()
+              // this.videos[labelToScroll - 1].play()
             }
 
             animateStationSection(currentLabel, labelToScroll, () => {
@@ -186,7 +186,7 @@ export default class App {
 
           const [x, yPercent] = pos
           if (x && yPercent) {
-            // gsap.set(`${selectors.station}-${id} ${selectors.stationBoxes} > *`, { autoAlpha: 0 })
+            gsap.set(`${selectors.station}-${id} ${selectors.stationBoxes} > *`, { autoAlpha: 0 })
 
             const fTl = gsap
               .timeline()

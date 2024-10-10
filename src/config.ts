@@ -4,6 +4,7 @@ const config = {
   debug: true,
   selectors: {
     box: '#draggable-box',
+    boxes: '.draggable-boxes',
     cursor: "#custom-cursor",
     cursorHoverables: ['button', 'a', '#active-station-button'],
     boxClass: '.draggable-box',
@@ -17,6 +18,7 @@ const config = {
     station: "#station",
     stationLinks: '#stationLinks > a',
     stationTitle: '#white-text-box',
+    stationTitleClass: '.white-text-box',
     stationBoxes: '.station-boxes'
   },
   animations: {

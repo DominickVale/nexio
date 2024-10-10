@@ -16,12 +16,12 @@ export function animateStationSection(
   })
   console.log('Animating: ', currentID, newStationID)
 
-  const oldStation = `${selectors.station}-${currentID} ${selectors.stationBoxes}`
-  const newStation = `${selectors.station}-${newStationID} ${selectors.stationBoxes}`
+  const oldStation = `${selectors.station}-${currentID} ${selectors.stationBoxes} > *`
+  const newStation = `${selectors.station}-${newStationID} ${selectors.stationBoxes} > *`
 
   if (currentID > 0) {
     // Animaions out
-    tl.to(`${oldStation} > *`, {
+    tl.to(oldStation, {
       y:
         newStationID > currentID
           ? -window.innerHeight / 4
@@ -29,15 +29,15 @@ export function animateStationSection(
       autoAlpha: 0,
       duration: 1,
       ease: 'power3.out',
+      stagger: 0.1
     })
   }
 
   if (newStationID <= 5) {
-    const s = `${selectors.box}-${newStationID}`
     // Animations In
 
     tl.fromTo(
-      `${newStation} > *`,
+      newStation,
       {
         y:
           newStationID > currentID
