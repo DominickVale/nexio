@@ -134,9 +134,10 @@ body {
   outline: 1px solid yellow;
 }
 
-/* .draggable-box { */
-/*   height: max-content; */
-/* } */
+.draggable-box {
+  --drag-x: 0px;
+  --drag-y: 0px;
+}
 
 @media screen and (max-width: 768px) {
   .image__container {

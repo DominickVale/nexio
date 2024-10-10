@@ -117,7 +117,7 @@ export default class App {
               directional: false,
             },
             onUpdate: self => {
-              const progress = self.progress * 5 
+              const progress = self.progress * 5
               const currentSection = Math.floor(progress)
               const sectionProgress = progress - currentSection
 
@@ -130,7 +130,10 @@ export default class App {
                   sectionProgress <= 0.5 ? currentSection : currentSection + 1
               }
 
-              if (targetSection >= 0 && targetSection <= positionsAnimations.length) {
+              if (
+                targetSection >= 0 &&
+                targetSection <= positionsAnimations.length
+              ) {
                 const newStationNumber = targetSection + 1
                 if (currentActiveStation !== newStationNumber) {
                   triggerStationAnimation(newStationNumber)
@@ -182,7 +185,8 @@ export default class App {
         function triggerStationAnimation(newStationNumber: number) {
           const oldStation = `${selectors.station}-${currentActiveStation} ${selectors.stationBoxes} > *`
           const newStation = `${selectors.station}-${newStationNumber} ${selectors.stationBoxes} > *`
-          const { boxesDuration, boxesStaggerIn, boxesStaggerOut } = CONFIG.animations.stations
+          const { boxesDuration, boxesStaggerIn, boxesStaggerOut } =
+            CONFIG.animations.stations
 
           if (currentAnimation) {
             currentAnimation.progress(1).kill()
@@ -213,7 +217,8 @@ export default class App {
               autoAlpha: 0,
             },
             {
-              y: 0,
+              y: (_, t) => t.style.getPropertyValue('--drag-y'),
+              x: (_, t) => t.style.getPropertyValue('--drag-x'),
               autoAlpha: 1,
               duration: boxesDuration,
               ease: 'power3.out',
