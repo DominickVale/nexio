@@ -60,10 +60,9 @@ export default class App {
 
         this.videos = $all('video') as NodeListOf<HTMLVideoElement>
 
-        this.videos.forEach(v => {
-          v.pause()
-        })
-        console.log(this.videos)
+        // this.videos.forEach(v => {
+        //   v.pause()
+        // })
 
         let lastTypewriterLabel = 1
 
