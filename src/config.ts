@@ -5,7 +5,7 @@ const config = {
   selectors: {
     box: '#draggable-box',
     boxes: '.draggable-boxes',
-    cursor: "#custom-cursor",
+    cursor: '#custom-cursor',
     cursorHoverables: ['button', 'a', '#active-station-button'],
     boxClass: '.draggable-box',
     hero: '#hero',
@@ -15,56 +15,74 @@ const config = {
     activeStationWrapper: '#station-selection',
     activeStationDropdown: '#stationLinks',
     activeStationBtn: '#active-station-button .station-selection-button',
-    station: "#station",
+    station: '#station',
     stationLinks: '#stationLinks > a',
     stationTitle: '#white-text-box',
     stationTitleClass: '.white-text-box',
-    stationBoxes: '.station-boxes'
+    stationBoxes: '.station-boxes',
   },
   animations: {
+    cursor: {
+      lagBehindDuration: 0.25,
+      lagBehindEase: 'power3.out',
+    },
+    preloader: {
+      barDuration: 0.3,
+      barEase: "power1.out",
+      borderDuration: 0.8,
+      borderEase: "power2.inOut",
+      hideDuration: 0.5,
+      hideEase: "power4.inOut",
+    },
+    hero: {
+      fridgeInDuration: 0.5,
+      fridgeInEase: 'power4.inOut',
+      fridgeInDelay: 0.25,
+      fridgeOutDuration: 0.5,
+      fridgeOutEase: 'power4.inOut',
+      heroHideDuration: 0.5,
+      heroHideEase: 'power4.inOut',
+      factoriesInDuration: 1.5,
+      factoriesInEase: 'power3.out',
+    },
     stations: {
-      stationSelectorSnapThreshold: 0.1,
-      boxesSnapThreshold: 0.06,
       boxesDuration: 1,
+      boxesEase: 'power3.out',
       boxesStaggerIn: 0.1,
       boxesStaggerOut: 0.01,
-    }
+      // how much to animate the boxes on the Y axis
+      boxesYOffsetFactor: 4,
+      snapDuration: {
+        min: 0.8,
+        max: 1,
+      },
+      snapEase: 'power2.out',
+      // how long to lag behind between scrolls (simulates smooth scroll)
+      scrollScrub: 2
+    },
+    typewriter: {
+      defaultSpeed: 0.3,
+      maxScrambleChars: 3,
+      ease: 'power4.out',
+      hexCodeDuration: 0.7,
+      hexMaxScrambleChars: 2,
+      hexEase: 'power4.out',
+      chars: 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+{}[]|\\:<>?,./`~;',
+    },
+    stationSelector: {
+      durationOpen: 0.8,
+      easeOpen: 'power3.out',
+      durationClose: 1,
+      easeClose: 'power3.in',
+    },
   },
-  heroData: [
-    {
-      name: 'Nexio Fridge v1.0',
-      size: '80x80',
-      gigs: 500,
-    },
-    {
-      name: 'Nexio Fridge v2.0',
-      size: '90x90',
-      gigs: 750,
-    },
-    {
-      name: 'Nexio Fridge v3.0',
-      size: '85x85',
-      gigs: 600,
-    },
-    {
-      name: 'Nexio Fridge v4.0',
-      size: '95x95',
-      gigs: 1000,
-    },
-    {
-      name: 'Nexio Fridge v5.0',
-      size: '69x420',
-      gigs: 1000,
-    },
-  ],
   stations: [
     'welcome to nexio',
     'scale with us',
     'start building',
     'docs & devnet',
-    'join our community'
+    'join our community',
   ],
-  typewriterChars: 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+{}[]|\\:<>?,./`~;',
 }
 merge(config, window.NEXIO_CONFIG)
 

@@ -57,8 +57,8 @@ export default class StationSelector {
       })
       .to(this.dropdown, {
         height: 'auto',
-        duration: 1,
-        ease: 'power3.out',
+        duration: CONFIG.animations.stationSelector.durationOpen,
+        ease: CONFIG.animations.stationSelector.easeOpen,
         onComplete: () => {
           this.shown = true
         },
@@ -69,15 +69,15 @@ export default class StationSelector {
     gsap.timeline()
       .to(this.dropdown, {
         height: 0,
-        duration: 0.8,
-        ease: 'power3.in',
+        duration: CONFIG.animations.stationSelector.durationOpen,
+        ease: CONFIG.animations.stationSelector.easeOpen,
         onComplete: () => {
           this.shown = false
         },
       })
       .to(this.dropdown, {
         borderColor: 'transparent',
-        duration: 0.5,
+        duration: CONFIG.animations.stationSelector.durationClose / 2,
         ease: 'power4.in',
       }, "<+=90%")
   }

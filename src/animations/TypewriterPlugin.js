@@ -8,7 +8,7 @@ import { TextPlugin, clamp } from 'gsap/all'
 import { CONFIG } from '../config.ts'
 const { splitInnerHTML } = TextPlugin
 
-const CHARS = CONFIG.typewriterChars
+const CHARS = CONFIG.animations.typewriter.chars
 
 let _tempDiv
 

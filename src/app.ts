@@ -4,27 +4,8 @@ import { CustomCursor } from './animations/cursor'
 import { setupHeroAnimations } from './animations/hero'
 import { setupStations } from './animations/stations'
 import { CONFIG } from './config'
-import './style.css'
 import { $all } from './utils'
-// import Lenis from 'lenis'
-// import Snap from 'lenis/snap'
 
-// const lenis = new Lenis({
-//   lerp: 0.035
-// })
-//
-// lenis.on('scroll', ScrollTrigger.update)
-//
-// gsap.ticker.add(time => {
-//   lenis.raf(time * 1000)
-// })
-//
-// gsap.ticker.lagSmoothing(0)
-
-// const snap = new Snap(lenis, {
-//   velocityThreshold: 0.5,
-//   lerp: 0.07,
-// })
 
 export default class App {
   heroShown: boolean
@@ -92,10 +73,10 @@ export default class App {
                 {
                   typewrite: {
                     value: CONFIG.stations[label - 1],
-                    speed: 0.3,
-                    maxScrambleChars: 3,
+                    speed: CONFIG.animations.typewriter.defaultSpeed,
+                    maxScrambleChars: CONFIG.animations.typewriter.maxScrambleChars,
                   },
-                  ease: 'power4.out',
+                  ease: CONFIG.animations.typewriter.ease,
                 },
                 '<+30%',
               )
@@ -115,11 +96,11 @@ export default class App {
             endTrigger: '#station-5',
             start: 'top top',
             end: 'bottom top',
-            scrub: 2,
+            scrub: CONFIG.animations.stations.scrollScrub,
             snap: {
               snapTo: 'labelsDirectional',
-              duration: { min: 0.8, max: 1 },
-              ease: 'power2.out',
+              duration: CONFIG.animations.stations.snapDuration,
+              ease: CONFIG.animations.stations.snapEase,
               delay: 0,
               inertia: false,
               directional: false,
@@ -195,7 +176,7 @@ export default class App {
         const triggerStationAnimation = (newStationNumber: number) => {
           const oldStation = `${selectors.station}-${currentActiveStation} ${selectors.stationBoxes} > *`
           const newStation = `${selectors.station}-${newStationNumber} ${selectors.stationBoxes} > *`
-          const { boxesDuration, boxesStaggerIn, boxesStaggerOut } =
+          const { boxesDuration, boxesStaggerIn, boxesStaggerOut, boxesEase, boxesYOffsetFactor } =
             CONFIG.animations.stations
 
           if (currentAnimation) {
@@ -208,11 +189,11 @@ export default class App {
             currentAnimation.to(oldStation, {
               y:
                 newStationNumber > currentActiveStation
-                  ? -window.innerHeight / 4
-                  : window.innerHeight / 4,
+                  ? -window.innerHeight / boxesYOffsetFactor
+                  : window.innerHeight / boxesYOffsetFactor,
               autoAlpha: 0,
               duration: boxesDuration,
-              ease: 'power3.out',
+              ease: boxesEase,
               stagger: boxesStaggerOut,
             })
           }
@@ -222,8 +203,8 @@ export default class App {
             {
               y:
                 newStationNumber > currentActiveStation
-                  ? window.innerHeight / 4
-                  : -window.innerHeight / 4,
+                  ? window.innerHeight / boxesYOffsetFactor
+                  : -window.innerHeight / boxesYOffsetFactor,
               autoAlpha: 0,
             },
             {
@@ -231,7 +212,7 @@ export default class App {
               x: (_, t) => t.style.getPropertyValue('--drag-x'),
               autoAlpha: 1,
               duration: boxesDuration,
-              ease: 'power3.out',
+              ease: boxesEase,
               stagger: boxesStaggerIn,
             },
             currentActiveStation ? '>-0.25' : 0,

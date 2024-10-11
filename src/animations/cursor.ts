@@ -24,13 +24,14 @@ export class CustomCursor {
     if (!cursor) throw new Error(`Cursor element with id ${cursorId} not found`)
     this.cursor = cursor as HTMLElement
 
+    const {lagBehindDuration, lagBehindEase} = CONFIG.animations.cursor
     this.setX = gsap.quickTo(this.cursor, 'x', {
-      duration: 0.25,
-      ease: 'power3',
+      duration: lagBehindDuration,
+      ease: lagBehindEase,
     })
     this.setY = gsap.quickTo(this.cursor, 'y', {
-      duration: 0.25,
-      ease: 'power3',
+      duration: lagBehindDuration,
+      ease: lagBehindEase,
     })
 
     this.initializeCursor()

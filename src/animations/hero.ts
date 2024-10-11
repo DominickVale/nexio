@@ -54,10 +54,10 @@ class FridgeHoverAnim {
       gsap.to('#hex-code .hex', {
         typewrite: {
           value: ' B  T  C    M  O  V  E ',
-          duration: 0.7,
-          maxScrambleChars: 2,
+          duration: CONFIG.animations.typewriter.hexCodeDuration,
+          maxScrambleChars: CONFIG.animations.typewriter.hexMaxScrambleChars,
         },
-        ease: 'power4.out',
+        ease: CONFIG.animations.typewriter.hexEase,
       })
     })
     this.hexCodeEl?.addEventListener('mouseleave', e => {
@@ -66,10 +66,10 @@ class FridgeHoverAnim {
       gsap.to('#hex-code .hex', {
         typewrite: {
           value: '42 54 43 20 4D 4F 56 45',
-          maxScrambleChars: 2,
-          duration: 0.7,
+          duration: CONFIG.animations.typewriter.hexCodeDuration,
+          maxScrambleChars: CONFIG.animations.typewriter.hexMaxScrambleChars,
         },
-        ease: 'power4.out',
+        ease: CONFIG.animations.typewriter.hexEase,
       })
     })
 
@@ -98,25 +98,27 @@ class FridgeHoverAnim {
     }
   }
 
-  handleHover(link: HTMLElement, isDesktop: boolean) {
-    const newIdx = Number(link.getAttribute('data-fridge-id'))
+  animateFridges(
+    currentFridge: HTMLElement,
+    newFridge: HTMLElement,
+    direction: number,
+  ) {
 
-    if (newIdx === this.currIdx) return
+    const {
+      fridgeOutEase,
+      fridgeOutDuration,
+      fridgeInDuration,
+      fridgeInEase,
+      fridgeInDelay,
+    } = CONFIG.animations.hero
 
-    const currentFridge = this.fridges[this.currIdx - 1]
-    const newFridge = this.fridges[newIdx - 1]
-    const direction = newIdx > this.currIdx ? 1 : -1
-
-    const animHeight = window.innerHeight / 2
-
-    // Force complete any ongoing animations
     gsap.killTweensOf([currentFridge, newFridge])
-
+    const animHeight = window.innerHeight / 2
     gsap.to(currentFridge, {
       autoAlpha: 0,
       y: () => animHeight * direction,
-      duration: 0.5,
-      ease: 'power4.inOut',
+      duration: fridgeOutDuration,
+      ease: fridgeOutEase,
       onComplete: () => {
         gsap.set(currentFridge, { y: 50 })
       },
@@ -128,14 +130,23 @@ class FridgeHoverAnim {
       {
         autoAlpha: 1,
         y: 0,
-        duration: 0.5,
-        ease: 'power4.inOut',
-        delay: 0.25,
+        duration: fridgeInDuration,
+        ease: fridgeInEase,
+        delay: fridgeInDelay,
       },
     )
+  }
 
-    // this.updateSpecificationBox(newIdx)
+  handleHover(link: HTMLElement, isDesktop: boolean) {
+    const newIdx = Number(link.getAttribute('data-fridge-id'))
 
+    if (newIdx === this.currIdx) return
+
+    const currentFridge = this.fridges[this.currIdx - 1]
+    const newFridge = this.fridges[newIdx - 1]
+    const direction = newIdx > this.currIdx ? 1 : -1
+
+    this.animateFridges(currentFridge, newFridge, direction)
     this.currIdx = newIdx
   }
 
@@ -146,53 +157,9 @@ class FridgeHoverAnim {
     const firstFridge = this.fridges[0]
     const direction = 1
 
-    const animHeight = window.innerHeight / 2
-
-    // Force complete any ongoing animations
-    gsap.killTweensOf([currentFridge, firstFridge])
-
-    gsap.to(currentFridge, {
-      autoAlpha: 0,
-      y: () => animHeight * direction,
-      duration: 0.5,
-      ease: 'power4.inOut',
-      onComplete: () => {
-        gsap.set(currentFridge, { y: 50 })
-      },
-    })
-
-    gsap.fromTo(
-      firstFridge,
-      { autoAlpha: 0, y: () => -animHeight * direction },
-      {
-        autoAlpha: 1,
-        y: 0,
-        duration: 0.5,
-        ease: 'power4.inOut',
-        delay: 0.25,
-      },
-    )
-
-    // this.updateSpecificationBox(1)
+    this.animateFridges(currentFridge, firstFridge, direction)
     this.currIdx = 1
   }
-
-  // updateSpecificationBox(index: number) {
-  //   if (!this.specBox) return
-  //
-  //   const data = CONFIG.heroData[index - 1]
-  //   if (!data) return
-  //
-  //   const nameElement = this.specBox.querySelector('.large-box .display')
-  //   const sizeElement = this.specBox.querySelector('.small-box .display.small')
-  //   const gigsElement = this.specBox.querySelector(
-  //     '.small-box:last-child .display.small',
-  //   )
-  //
-  //   if (nameElement) nameElement.textContent = data.name
-  //   if (sizeElement) sizeElement.textContent = data.size
-  //   if (gigsElement) gigsElement.textContent = `${data.gigs} gigs`
-  // }
 }
 
 ///////
@@ -226,7 +193,8 @@ export function setupHeroAnimations(
 /////
 
 export function hideHero(isDesktop: boolean) {
-  const { selectors } = CONFIG
+  const { selectors, animations } = CONFIG
+  const {heroHideEase, heroHideDuration, factoriesInEase, factoriesInDuration} =  animations.hero
   window.app.heroShown = false
   gsap
     .timeline()
@@ -234,8 +202,8 @@ export function hideHero(isDesktop: boolean) {
     .to(selectors.hero, {
       autoAlpha: 0,
       y: '-100vh',
-      duration: 0.5,
-      ease: 'power4.inOut',
+      duration: heroHideDuration,
+      ease: heroHideEase,
     })
     .set(
       selectors.hero,
@@ -255,8 +223,8 @@ export function hideHero(isDesktop: boolean) {
         '--left': isDesktop ? '100.5vw' : '115vw',
         '--max-left': isDesktop ? '35vw' : '40vw',
         '--top': isDesktop ? '-2vh' : '5vh',
-        duration: 1.5,
-        ease: 'power3.out',
+        duration: factoriesInDuration,
+        ease: factoriesInEase,
       },
       '<',
     )
