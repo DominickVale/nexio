@@ -77,9 +77,9 @@ export default class App {
               .to('#active-station-button .label', {
                 typewrite: {
                   value: 'station ' + label,
-                  speed: 0.2,
                   maxScrambleChars: 3,
                 },
+                duration: CONFIG.animations.typewriter.defaultDuration / 2,
                 ease: 'power4.out',
               })
               .to(
@@ -87,10 +87,10 @@ export default class App {
                 {
                   typewrite: {
                     value: CONFIG.stations[label - 1],
-                    speed: CONFIG.animations.typewriter.defaultSpeed,
                     maxScrambleChars:
                       CONFIG.animations.typewriter.maxScrambleChars,
                   },
+                  duration: CONFIG.animations.typewriter.defaultDuration,
                   ease: CONFIG.animations.typewriter.ease,
                 },
                 '<+30%',
@@ -251,11 +251,11 @@ export default class App {
                 currentActiveStation ? '>-0.25' : 0,
               )
           }
-          this.updateVideos(
-            lastDirection,
-            newStationNumber,
-            currentActiveStation,
-          )
+          // this.updateVideos(
+          //   lastDirection,
+          //   newStationNumber,
+          //   currentActiveStation,
+          // )
           currentActiveStation = newStationNumber
         }
       },
@@ -266,19 +266,19 @@ export default class App {
     }
   }
 
-  updateVideos(direction: 'up' | 'down', newId: number, currIdx: number) {
-    gsap.utils.toArray<HTMLVideoElement>('video').forEach((v, i) => {
-      const idx = i + 1
-      const prev = direction === 'up' ? newId : currIdx
-      const next = direction === 'down' ? newId : newId - 1
-
-      if (idx === prev || idx === next) {
-        v.play()
-        v.loop = true
-      } else {
-        v.currentTime = 0
-        v.pause()
-      }
-    })
-  }
+  // updateVideos(direction: 'up' | 'down', newId: number, currIdx: number) {
+  //   gsap.utils.toArray<HTMLVideoElement>('video').forEach((v, i) => {
+  //     const idx = i + 1
+  //     const prev = direction === 'up' ? newId : currIdx
+  //     const next = direction === 'down' ? newId : newId - 1
+  //
+  //     if (idx === prev || idx === next) {
+  //       v.play()
+  //       v.loop = true
+  //     } else {
+  //       v.currentTime = 0
+  //       v.pause()
+  //     }
+  //   })
+  // }
 }

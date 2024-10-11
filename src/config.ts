@@ -2,7 +2,7 @@ import { merge } from 'lodash'
 
 const config = {
   debug: true,
-  enableSmoothScroll: true,
+  enableSmoothScroll: false,
   breakpoints: {
     maxMobile: 768
   },
@@ -74,7 +74,7 @@ const config = {
       scrollScrub: 2
     },
     typewriter: {
-      defaultSpeed: 0.3,
+      defaultDuration: 0.3,
       maxScrambleChars: 3,
       ease: 'power4.out',
       hexCodeDuration: 0.7,
