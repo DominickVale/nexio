@@ -2,6 +2,7 @@ import { merge } from 'lodash'
 
 const config = {
   debug: true,
+  enableSmoothScroll: true,
   breakpoints: {
     maxMobile: 768
   },

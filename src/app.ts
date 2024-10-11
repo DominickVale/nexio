@@ -1,10 +1,12 @@
 import gsap from 'gsap'
+import ScrollTrigger from 'gsap/ScrollTrigger'
 import { debounce } from 'lodash'
 import { CustomCursor } from './animations/cursor'
 import { setupHeroAnimations } from './animations/hero'
 import { setupStations } from './animations/stations'
 import { CONFIG } from './config'
 import { $all } from './utils'
+import Lenis from 'lenis'
 
 export default class App {
   heroShown: boolean
@@ -30,6 +32,16 @@ export default class App {
   init() {
     const mm = gsap.matchMedia(),
       breakpoint = CONFIG.breakpoints.maxMobile
+    if (CONFIG.enableSmoothScroll) {
+      const lenis = new Lenis()
+
+      lenis.on('scroll', ScrollTrigger.update)
+      gsap.ticker.add(time => {
+        lenis.raf(time * 1000)
+      })
+
+      gsap.ticker.lagSmoothing(0)
+    }
 
     mm.add(
       {
@@ -92,6 +104,7 @@ export default class App {
         let currentAnimation: gsap.core.Timeline | null = null
         let lastDirection: 'up' | 'down' = 'down'
 
+        console.log('snap eanbled? ', CONFIG.animations.stations.snap)
         // Create the main timeline with ScrollTrigger
         this.mainTimeline = gsap.timeline({
           scrollTrigger: {
@@ -100,14 +113,16 @@ export default class App {
             start: 'top top',
             end: 'bottom top',
             scrub: CONFIG.animations.stations.scrollScrub,
-            snap: CONFIG.animations.stations.snap ? {
-              snapTo: 'labelsDirectional',
-              duration: CONFIG.animations.stations.snapDuration,
-              ease: CONFIG.animations.stations.snapEase,
-              delay: 0,
-              inertia: false,
-              directional: false,
-            } : undefined,
+            snap: CONFIG.animations.stations.snap
+              ? {
+                  snapTo: 'labelsDirectional',
+                  duration: CONFIG.animations.stations.snapDuration,
+                  ease: CONFIG.animations.stations.snapEase,
+                  delay: 0,
+                  inertia: false,
+                  directional: false,
+                }
+              : undefined,
             onUpdate: self => {
               const progress = self.progress * 5
               const currentSection = Math.floor(progress)
@@ -204,7 +219,7 @@ export default class App {
 
           if (currentActiveStation) {
             currentAnimation
-              .set([ oldStation, oldStationBoxes ], { clearProps: 'zIndex'})
+              .set([oldStation, oldStationBoxes], { clearProps: 'zIndex' })
               .to(oldStationBoxes, {
                 y:
                   newStationNumber > currentActiveStation
@@ -215,7 +230,7 @@ export default class App {
                 ease: boxesEase,
                 stagger: boxesStaggerOut,
               })
-              .set([ newStation, newStationBoxes ], { zIndex: 20})
+              .set([newStation, newStationBoxes], { zIndex: 20 })
               .fromTo(
                 newStationBoxes,
                 {
