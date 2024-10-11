@@ -1,4 +1,5 @@
 import gsap from 'gsap'
+import ScrollTrigger from 'gsap/ScrollTrigger'
 import { CONFIG } from '../config'
 import { $ } from '../utils'
 import { animateStationSection } from './stations'
@@ -15,7 +16,7 @@ class FridgeHoverAnim {
   hexCodeEl: HTMLElement | null
 
   constructor(isDesktop: boolean, isMobile: boolean, reduceMotion: boolean) {
-    this.currIdx = 1
+    this.currIdx = 5
     this.fridges = []
     this.links = []
     this.parentElement = null
@@ -34,7 +35,7 @@ class FridgeHoverAnim {
     this.specBox = $('.specification-box')
 
     this.fridges.forEach((fridge, index) => {
-      if (index !== 0) {
+      if (index !== 4) {
         gsap.set(fridge, { autoAlpha: 0, y: 50 })
       }
     })
@@ -83,7 +84,7 @@ class FridgeHoverAnim {
   handleClick(link: HTMLElement, isDesktop: boolean) {
     const idx = Number(link.getAttribute('data-fridge-id'))
     const labelPos = window.app.mainTimeline.scrollTrigger!.labelToScroll(
-      (idx - 1).toString(),
+      idx.toString(),
     )
 
     hideHero(isDesktop)
@@ -103,7 +104,6 @@ class FridgeHoverAnim {
     newFridge: HTMLElement,
     direction: number,
   ) {
-
     const {
       fridgeOutEase,
       fridgeOutDuration,
@@ -151,14 +151,15 @@ class FridgeHoverAnim {
   }
 
   handleMouseLeave() {
-    if (this.currIdx === 1) return
+    const defaultFridgeIdx = CONFIG.animations.hero.defaultFridge
+    if (this.currIdx === defaultFridgeIdx) return
 
     const currentFridge = this.fridges[this.currIdx - 1]
-    const firstFridge = this.fridges[0]
+    const defaultFridge = this.fridges[defaultFridgeIdx - 1]
     const direction = 1
 
-    this.animateFridges(currentFridge, firstFridge, direction)
-    this.currIdx = 1
+    this.animateFridges(currentFridge, defaultFridge, direction)
+    this.currIdx = CONFIG.animations.hero.defaultFridge
   }
 }
 
@@ -178,6 +179,9 @@ export function setupHeroAnimations(
 
   function onClickHero(e: MouseEvent) {
     e.preventDefault()
+    ScrollTrigger.clearScrollMemory()
+    ScrollTrigger.refresh()
+    window.history.scrollRestoration = 'manual'
     hideHero(isDesktop)
 
     animateStationSection(1)
@@ -194,7 +198,12 @@ export function setupHeroAnimations(
 
 export function hideHero(isDesktop: boolean) {
   const { selectors, animations } = CONFIG
-  const {heroHideEase, heroHideDuration, factoriesInEase, factoriesInDuration} =  animations.hero
+  const {
+    heroHideEase,
+    heroHideDuration,
+    factoriesInEase,
+    factoriesInDuration,
+  } = animations.hero
   window.app.heroShown = false
   gsap
     .timeline()
@@ -227,7 +236,22 @@ export function hideHero(isDesktop: boolean) {
         ease: factoriesInEase,
       },
       '<',
-    )
+    ).to(selectors.navButton, {
+      onStart: () => {gsap.set(selectors.navButton, {display: 'inline-flex'})},
+      autoAlpha: 1,
+      duration: animations.default.duration,
+      ease: animations.default.ease
+    }, "<")
+    .to(selectors.logo, {
+      autoAlpha: 0,
+      duration: animations.default.duration,
+      ease: animations.default.ease
+    }, "<")
+    .to(selectors.orangeLogo, {
+      autoAlpha: 1,
+      duration: animations.default.duration,
+      ease: animations.default.ease
+    }, "<")
 }
 
 //@ts-ignore just for debugging

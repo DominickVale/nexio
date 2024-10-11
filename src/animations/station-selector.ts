@@ -85,7 +85,7 @@ export default class StationSelector {
   handleClick(link: HTMLElement, isDesktop: boolean) {
     const idx = Number(link.getAttribute('data-station'))
     const labelPos = window.app.mainTimeline.scrollTrigger!.labelToScroll(
-      (idx - 1).toString(),
+      (idx).toString(),
     )
 
     this.close()

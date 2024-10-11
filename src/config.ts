@@ -2,6 +2,9 @@ import { merge } from 'lodash'
 
 const config = {
   debug: true,
+  breakpoints: {
+    maxMobile: 768
+  },
   selectors: {
     box: '#draggable-box',
     boxes: '.draggable-boxes',
@@ -20,8 +23,15 @@ const config = {
     stationTitle: '#white-text-box',
     stationTitleClass: '.white-text-box',
     stationBoxes: '.station-boxes',
+    navButton: '#nav-button',
+    logo: "#logo",
+    orangeLogo: '#logo-orange'
   },
   animations: {
+    default: {
+      ease: "power3.inOut",
+      duration: 1
+    },
     cursor: {
       lagBehindDuration: 0.25,
       lagBehindEase: 'power3.out',
@@ -35,6 +45,7 @@ const config = {
       hideEase: "power4.inOut",
     },
     hero: {
+      defaultFridge: 5,
       fridgeInDuration: 0.5,
       fridgeInEase: 'power4.inOut',
       fridgeInDelay: 0.25,
@@ -56,6 +67,7 @@ const config = {
         min: 0.8,
         max: 1,
       },
+      snap: true, // enable snap
       snapEase: 'power2.out',
       // how long to lag behind between scrolls (simulates smooth scroll)
       scrollScrub: 2
