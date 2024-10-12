@@ -4,6 +4,7 @@ import Lenis from 'lenis'
 import { CustomCursor } from './animations/cursor'
 import { setupHomepage } from './animations/homepage'
 import { CONFIG } from './config'
+import { setupScrambles } from './animations/TextScramble'
 
 export default class App {
   heroShown: boolean
@@ -46,6 +47,7 @@ export default class App {
         // setupPreloader(isDesktop, isMobile, reduceMotion)
         console.log(window.location.pathname, window.location.pathname === '/')
         if (this.isHomepage) {
+          setupScrambles()
           setupHomepage(isDesktop, isMobile, reduceMotion)
         }
       },
