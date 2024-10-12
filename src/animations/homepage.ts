@@ -105,7 +105,7 @@ export class Homepage {
     })
 
     Observer.create({
-      type: 'wheel,touch,pointer',
+      type: 'wheel,touch',
       wheelSpeed: -1,
       onDown: () => {
         if (this.currentIndex > 1 && !this.isAnimating) {
