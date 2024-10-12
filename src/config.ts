@@ -4,7 +4,7 @@ const config = {
   debug: true,
   enableSmoothScroll: false,
   breakpoints: {
-    maxMobile: 768
+    maxMobile: 768,
   },
   selectors: {
     box: '#draggable-box',
@@ -25,25 +25,73 @@ const config = {
     stationTitleClass: '.white-text-box',
     stationBoxes: '.station-boxes',
     navButton: '#nav-button',
-    logo: "#logo",
-    orangeLogo: '#logo-orange'
+    logo: '#logo',
+    orangeLogo: '#logo-orange',
   },
   animations: {
     default: {
-      ease: "power3.inOut",
-      duration: 1
+      ease: 'power3.inOut',
+      duration: 1,
     },
     cursor: {
-      lagBehindDuration: 0.25,
-      lagBehindEase: 'power3.out',
+      lagDuration: 0.1,
+      lagEase: 'power3.out',
+      transitionDuration: 0.3,
+      transitionEase: 'power2.out',
+      states: {
+        default: {
+          svg: { rotation: 0, scale: 1 },
+          path: {
+            fill: 'var(--secondary)',
+            stroke: 'var(--tertiary)',
+            strokeWidth: 1,
+          },
+        },
+        defaultHover: {
+          svg: { rotation: 60, scale: 1.5 },
+          path: {
+            fill: 'var(--secondary)',
+            stroke: 'var(--secondary)',
+            strokeWidth: 1,
+          },
+        },
+        defaultDrag: {
+          svg: { rotation: 0, scale: 1 },
+          path: { fill: 'none', stroke: 'var(--tertiary)', strokeWidth: 1 },
+        },
+        defaultHoverDrag: {
+          svg: { rotation: 60, scale: 1.2 },
+          path: {
+            fill: 'var(--secondary)',
+            stroke: 'var(--tertiary)',
+            strokeWidth: 1,
+          },
+        },
+        blueprint: {
+          svg: { rotation: 0, scale: 1 },
+          path: { fill: 'none', stroke: 'white', strokeWidth: 1 },
+        },
+        blueprintHover: {
+          svg: { rotation: 0, scale: 1.25 },
+          path: { fill: 'white', stroke: 'transparent', strokeWidth: 1 },
+        },
+        blueprintDrag: {
+          svg: { rotation: 0, scale: 1.1 },
+          path: { fill: 'none', stroke: 'white', strokeWidth: 2 },
+        },
+        blueprintHoverDrag: {
+          svg: { rotation: 0, scale: 1.3 },
+          path: { fill: 'white', stroke: 'white', strokeWidth: 1 },
+        },
+      },
     },
     preloader: {
       barDuration: 0.3,
-      barEase: "power1.out",
+      barEase: 'power1.out',
       borderDuration: 0.8,
-      borderEase: "power2.inOut",
+      borderEase: 'power2.inOut',
       hideDuration: 0.5,
-      hideEase: "power4.inOut",
+      hideEase: 'power4.inOut',
     },
     hero: {
       defaultFridge: 5,
@@ -71,7 +119,7 @@ const config = {
       snap: true, // enable snap
       snapEase: 'power2.out',
       // how long to lag behind between scrolls (simulates smooth scroll)
-      scrollScrub: 2
+      scrollScrub: 2,
     },
     typewriter: {
       defaultDuration: 0.3,
@@ -80,7 +128,8 @@ const config = {
       hexCodeDuration: 0.7,
       hexMaxScrambleChars: 2,
       hexEase: 'power4.out',
-      chars: 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+{}[]|\\:<>?,./`~;',
+      chars:
+        'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+{}[]|\\:<>?,./`~;',
     },
     stationSelector: {
       durationOpen: 0.8,

@@ -16,7 +16,7 @@ class FridgeHoverAnim {
   hexCodeEl: HTMLElement | null
 
   constructor(isDesktop: boolean, isMobile: boolean, reduceMotion: boolean) {
-    this.currIdx = 5
+    this.currIdx = CONFIG.animations.hero.defaultFridge
     this.fridges = []
     this.links = []
     this.parentElement = null
@@ -205,6 +205,7 @@ export function hideHero(isDesktop: boolean) {
     factoriesInDuration,
   } = animations.hero
   window.app.heroShown = false
+  window.app.cursor.setMode('default')
   gsap
     .timeline()
     .set('body', { overflow: 'auto' })
