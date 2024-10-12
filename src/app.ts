@@ -10,12 +10,14 @@ export default class App {
   heroShown: boolean
   isHomepage: boolean
   cursor: CustomCursor
+  mainTimeline: gsap.core.Timeline
 
   constructor() {
     this.heroShown = true
     window.app = this
-    this.cursor = new CustomCursor()
     this.isHomepage = window.location.pathname === "/"
+    this.mainTimeline = gsap.timeline()
+    this.cursor = new CustomCursor()
     this.init()
   }
 

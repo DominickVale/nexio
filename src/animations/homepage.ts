@@ -6,7 +6,6 @@ import { setupHeroAnimations } from './hero'
 import { setupStations } from './stations'
 
 class Homepage {
-  mainTimeline: gsap.core.Timeline
   videos: NodeListOf<HTMLVideoElement> | null
   isDesktop: boolean
   isMobile: boolean
@@ -14,7 +13,6 @@ class Homepage {
 
   constructor(isDesktop: boolean, isMobile: boolean, reduceMotion: boolean) {
     this.setup()
-    this.mainTimeline = gsap.timeline()
     this.videos = null
 
     this.isDesktop = isDesktop
@@ -24,6 +22,10 @@ class Homepage {
 
   setup() {
     const { selectors } = CONFIG
+
+    setupHeroAnimations(this.isDesktop, this.isMobile, this.reduceMotion)
+    setupStations(this.isDesktop, this.isMobile, this.reduceMotion)
+
     this.videos = $all('video') as NodeListOf<HTMLVideoElement>
 
     // this.videos.forEach(v => {
@@ -70,7 +72,7 @@ class Homepage {
 
     console.log('snap eanbled? ', CONFIG.animations.stations.snap)
     // Create the main timeline with ScrollTrigger
-    this.mainTimeline = gsap.timeline({
+    window.app.mainTimeline = gsap.timeline({
       scrollTrigger: {
         trigger: '#station-1',
         endTrigger: '#station-5',
@@ -148,9 +150,9 @@ class Homepage {
         const fTl = gsap
           .timeline()
           .to(selectors.factoriesContainer, { x, yPercent })
-        this.mainTimeline.addLabel(id.toString()).add(fTl)
+        window.app.mainTimeline.addLabel(id.toString()).add(fTl)
       } else {
-        this.mainTimeline.addLabel(id.toString())
+        window.app.mainTimeline.addLabel(id.toString())
       }
     })
 
@@ -246,6 +248,4 @@ export function setupHomepage(
   reduceMotion: boolean,
 ) {
   new Homepage(isDesktop, isMobile, reduceMotion)
-  setupHeroAnimations(isDesktop, isMobile, reduceMotion)
-  setupStations(isDesktop, isMobile, reduceMotion)
 }
