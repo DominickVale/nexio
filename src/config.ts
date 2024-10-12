@@ -121,6 +121,18 @@ const config = {
       // how long to lag behind between scrolls (simulates smooth scroll)
       scrollScrub: 2,
     },
+    footer: {
+      reveal: {
+        height: 0,
+        duration: 1.5,
+        ease: 'power4.out',
+      },
+      hide: {
+        height: '100%',
+        duration: 1,
+        ease: 'power4.out',
+      },
+    },
     typewriter: {
       defaultDuration: 0.3,
       maxScrambleChars: 3,

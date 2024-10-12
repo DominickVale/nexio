@@ -83,20 +83,9 @@ class FridgeHoverAnim {
 
   handleClick(link: HTMLElement, isDesktop: boolean) {
     const idx = Number(link.getAttribute('data-fridge-id'))
-    const labelPos = window.app.mainTimeline.scrollTrigger!.labelToScroll(
-      idx.toString(),
-    )
+    window.app.homePage?.triggerStationAnimation(idx)
 
     hideHero(isDesktop)
-    gsap.to(window, {
-      scrollTo: labelPos,
-      duration: 1,
-      ease: 'power3.inOut',
-    })
-    if (idx === 1) {
-      animateStationSection(1)
-      // window.app.updateVideos('up', 1, 2)
-    }
   }
 
   animateFridges(

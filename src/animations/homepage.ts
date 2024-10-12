@@ -4,20 +4,28 @@ import { CONFIG } from '../config'
 import { $all } from '../utils'
 import { setupHeroAnimations } from './hero'
 import { setupStations } from './stations'
+import Observer from 'gsap/Observer'
 
-class Homepage {
+export class Homepage {
   videos: NodeListOf<HTMLVideoElement> | null
   isDesktop: boolean
   isMobile: boolean
   reduceMotion: boolean
+  currentIndex: number
+  currentAnimation: gsap.core.Timeline | undefined
+  positionsAnimations: (number | (() => number))[][] | undefined
+  isAnimating: boolean
 
   constructor(isDesktop: boolean, isMobile: boolean, reduceMotion: boolean) {
-    this.setup()
     this.videos = null
+
+    this.currentIndex = 1
+    this.isAnimating = false
 
     this.isDesktop = isDesktop
     this.isMobile = isMobile
     this.reduceMotion = reduceMotion
+    this.setup()
   }
 
   setup() {
@@ -27,10 +35,6 @@ class Homepage {
     setupStations(this.isDesktop, this.isMobile, this.reduceMotion)
 
     this.videos = $all('video') as NodeListOf<HTMLVideoElement>
-
-    // this.videos.forEach(v => {
-    //   v.pause()
-    // })
 
     let lastTypewriterLabel = 1
 
@@ -66,62 +70,12 @@ class Homepage {
       { trailing: true },
     )
 
-    let currentActiveStation = 0
-    let currentAnimation: gsap.core.Timeline | null = null
-    let lastDirection: 'up' | 'down' = 'down'
-
-    console.log('snap eanbled? ', CONFIG.animations.stations.snap)
     // Create the main timeline with ScrollTrigger
-    window.app.mainTimeline = gsap.timeline({
-      scrollTrigger: {
-        trigger: '#station-1',
-        endTrigger: '#station-5',
-        start: 'top top',
-        end: 'bottom top',
-        scrub: CONFIG.animations.stations.scrollScrub,
-        snap: CONFIG.animations.stations.snap
-          ? {
-              snapTo: 'labelsDirectional',
-              duration: CONFIG.animations.stations.snapDuration,
-              ease: CONFIG.animations.stations.snapEase,
-              delay: 0,
-              inertia: false,
-              directional: false,
-            }
-          : undefined,
-        onUpdate: self => {
-          const progress = self.progress * 5
-          const currentSection = Math.floor(progress)
-          const sectionProgress = progress - currentSection
+    window.app.mainTimeline = gsap.timeline({})
 
-          let targetSection
-          if (self.getVelocity() > 0) {
-            targetSection =
-              sectionProgress >= 0.5 ? currentSection + 1 : currentSection
-          } else {
-            targetSection =
-              sectionProgress <= 0.5 ? currentSection : currentSection + 1
-          }
-
-          if (
-            targetSection >= 0 &&
-            targetSection <= positionsAnimations.length
-          ) {
-            const newStationNumber = targetSection + 1
-            lastDirection =
-              newStationNumber > currentActiveStation ? 'down' : 'up'
-            if (currentActiveStation !== newStationNumber) {
-              triggerStationAnimation(newStationNumber)
-              animateTypewriter(newStationNumber)
-            }
-          }
-        },
-      },
-    })
-
-    // [x: () => x, yPercent] @todo: find ratios if video sizes will be same
-    const positionsAnimations = this.isMobile
+    this.positionsAnimations = this.isMobile
       ? [
+          [0, 0],
           [() => -(window.innerHeight * 0.4), -25],
           [() => -(window.innerHeight * 0.9), -55],
           [() => -(window.innerHeight * 1.4), -85],
@@ -130,6 +84,7 @@ class Homepage {
           [],
         ]
       : [
+          [0, 0],
           [() => -(window.innerHeight * 0.83), -105],
           [() => -(window.innerHeight * 1.72), -215],
           [() => -(window.innerHeight * 2.57), -320],
@@ -138,7 +93,7 @@ class Homepage {
           [],
         ]
 
-    positionsAnimations.forEach((pos, i) => {
+    this.positionsAnimations.forEach((pos, i) => {
       const id = i + 1
 
       const [x, yPercent] = pos
@@ -146,106 +101,128 @@ class Homepage {
         gsap.set(`${selectors.station}-${id} ${selectors.stationBoxes} > *`, {
           autoAlpha: 0,
         })
-
-        const fTl = gsap
-          .timeline()
-          .to(selectors.factoriesContainer, { x, yPercent })
-        window.app.mainTimeline.addLabel(id.toString()).add(fTl)
-      } else {
-        window.app.mainTimeline.addLabel(id.toString())
       }
     })
 
-    const triggerStationAnimation = (newStationNumber: number) => {
-      const oldStation = `${selectors.station}-${currentActiveStation}`
-      const newStation = `${selectors.station}-${newStationNumber}`
-      const oldStationBoxes = `${oldStation} ${selectors.stationBoxes} > *`
-      const newStationBoxes = `${newStation} ${selectors.stationBoxes} > *`
-      const {
-        boxesDuration,
-        boxesStaggerIn,
-        boxesStaggerOut,
-        boxesEase,
-        boxesYOffsetFactor,
-      } = CONFIG.animations.stations
+    Observer.create({
+      type: 'wheel,touch,pointer',
+      wheelSpeed: -1,
+      onDown: () => {
+        if (this.currentIndex > 1 && !this.isAnimating) {
+          this.triggerStationAnimation(this.currentIndex - 1)
+        }
+      },
+      onUp: () => {
+        if (
+          this.currentIndex < this.positionsAnimations!.length - 1 &&
+          !this.isAnimating
+        ) {
+          this.triggerStationAnimation(this.currentIndex + 1)
+        }
+      },
+      tolerance: 10,
+      preventDefault: true,
+    })
+  }
 
-      if (currentAnimation) {
-        currentAnimation.progress(1).kill()
-      }
+  public triggerStationAnimation(newStationNumber: number) {
+    const { selectors, animations } = CONFIG
+    const oldStation = `${selectors.station}-${this.currentIndex}`
+    const newStation = `${selectors.station}-${newStationNumber}`
+    const oldStationBoxes = `${oldStation} ${selectors.stationBoxes} > *`
+    const newStationBoxes = `${newStation} ${selectors.stationBoxes} > *`
+    const {
+      boxesDuration,
+      boxesStaggerIn,
+      boxesStaggerOut,
+      boxesEase,
+      boxesYOffsetFactor,
+    } = animations.stations
 
-      currentAnimation = gsap.timeline()
-      if (CONFIG.debug)
-        console.log(
-          '[NEXIO]: oldStation: ',
-          currentActiveStation,
-          'newStation: ',
-          newStationNumber,
-        )
+    const direction =
+      newStationNumber === this.currentIndex
+        ? 'same'
+        : newStationNumber > this.currentIndex
+          ? 'down'
+          : 'up'
 
-      if (currentActiveStation) {
-        currentAnimation
-          .set([oldStation, oldStationBoxes], { clearProps: 'zIndex' })
-          .to(oldStationBoxes, {
+    if (this.currentAnimation) {
+      this.currentAnimation.progress(1).kill()
+    }
+
+    const that = this
+    this.currentAnimation = gsap.timeline({
+      onUpdate() {
+        if (this.progress() > 0.5) {
+          that.isAnimating = false
+        }
+      },
+    })
+    if (CONFIG.debug)
+      console.log(
+        '[NEXIO]: oldStation: ',
+        this.currentIndex,
+        'newStation: ',
+        newStationNumber,
+      )
+
+    if (
+      this.positionsAnimations &&
+      newStationNumber < this.positionsAnimations.length
+    ) {
+      const posId =
+        direction === 'down' || direction === 'same'
+          ? newStationNumber - 1
+          : this.currentIndex - 2
+
+      const [x, yPercent] = this.positionsAnimations[posId]
+
+      const isAnimatingFooterUp = newStationNumber === this.positionsAnimations.length - 2 && direction === 'up'
+      this.isAnimating = true
+      this.currentAnimation
+        .set([oldStation, oldStationBoxes], { clearProps: 'zIndex' })
+        .to(selectors.factoriesContainer, { x, yPercent }, isAnimatingFooterUp ? animations.footer.hide.duration / 2 : 0)
+        .to(
+          oldStationBoxes,
+          {
             y:
-              newStationNumber > currentActiveStation
+              newStationNumber > this.currentIndex
                 ? -window.innerHeight / boxesYOffsetFactor
                 : window.innerHeight / boxesYOffsetFactor,
             autoAlpha: 0,
             duration: boxesDuration,
             ease: boxesEase,
             stagger: boxesStaggerOut,
-          })
-          .set([newStation, newStationBoxes], { zIndex: 20 })
-          .fromTo(
-            newStationBoxes,
-            {
-              y:
-                newStationNumber > currentActiveStation
-                  ? window.innerHeight / boxesYOffsetFactor
-                  : -window.innerHeight / boxesYOffsetFactor,
-              autoAlpha: 0,
-            },
-            {
-              y: (_, t) => t.style.getPropertyValue('--drag-y'),
-              x: (_, t) => t.style.getPropertyValue('--drag-x'),
-              autoAlpha: 1,
-              duration: boxesDuration,
-              ease: boxesEase,
-              stagger: boxesStaggerIn,
-            },
-            currentActiveStation ? '>-0.25' : 0,
-          )
+          },
+          '<',
+        )
+        .set([newStation, newStationBoxes], { zIndex: 20 })
+        .fromTo(
+          newStationBoxes,
+          {
+            y:
+              newStationNumber > this.currentIndex
+                ? window.innerHeight / boxesYOffsetFactor
+                : -window.innerHeight / boxesYOffsetFactor,
+            autoAlpha: 0,
+          },
+          {
+            y: (_, t) => t.style.getPropertyValue('--drag-y'),
+            x: (_, t) => t.style.getPropertyValue('--drag-x'),
+            autoAlpha: 1,
+            duration: boxesDuration,
+            ease: boxesEase,
+            stagger: boxesStaggerIn,
+          },
+          this.currentIndex ? '>-0.25' : 0,
+        )
+
+      if (newStationNumber === this.positionsAnimations.length - 1) {
+        this.currentAnimation.to('.footer-mask', animations.footer.reveal, "<")
+      } else if (isAnimatingFooterUp) {
+        this.currentAnimation.to('.footer-mask', animations.footer.hide, "0")
       }
-      // this.updateVideos(
-      //   lastDirection,
-      //   newStationNumber,
-      //   currentActiveStation,
-      // )
-      currentActiveStation = newStationNumber
     }
+    this.currentIndex = newStationNumber
   }
-}
-
-// updateVideos(direction: 'up' | 'down', newId: number, currIdx: number) {
-//   gsap.utils.toArray<HTMLVideoElement>('video').forEach((v, i) => {
-//     const idx = i + 1
-//     const prev = direction === 'up' ? newId : currIdx
-//     const next = direction === 'down' ? newId : newId - 1
-//
-//     if (idx === prev || idx === next) {
-//       v.play()
-//       v.loop = true
-//     } else {
-//       v.currentTime = 0
-//       v.pause()
-//     }
-//   })
-// }
-
-export function setupHomepage(
-  isDesktop: boolean,
-  isMobile: boolean,
-  reduceMotion: boolean,
-) {
-  new Homepage(isDesktop, isMobile, reduceMotion)
 }

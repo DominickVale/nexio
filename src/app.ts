@@ -2,7 +2,7 @@ import gsap from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
 import Lenis from 'lenis'
 import { CustomCursor } from './animations/cursor'
-import { setupHomepage } from './animations/homepage'
+import { Homepage } from './animations/homepage'
 import { CONFIG } from './config'
 import { setupScrambles } from './animations/TextScramble'
 
@@ -11,11 +11,12 @@ export default class App {
   isHomepage: boolean
   cursor: CustomCursor
   mainTimeline: gsap.core.Timeline
+  homePage: Homepage | undefined
 
   constructor() {
     this.heroShown = true
     window.app = this
-    this.isHomepage = window.location.pathname === "/"
+    this.isHomepage = window.location.pathname === '/'
     this.mainTimeline = gsap.timeline()
     this.cursor = new CustomCursor()
     this.init()
@@ -50,7 +51,7 @@ export default class App {
         console.log(window.location.pathname, window.location.pathname === '/')
         if (this.isHomepage) {
           setupScrambles()
-          setupHomepage(isDesktop, isMobile, reduceMotion)
+          this.homePage = new Homepage(isDesktop, isMobile, reduceMotion)
         }
       },
     )
