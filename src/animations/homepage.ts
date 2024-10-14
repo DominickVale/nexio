@@ -29,7 +29,7 @@ export class Homepage {
   }
 
   setup() {
-    const { selectors } = CONFIG
+    const { selectors, animations } = CONFIG
 
     setupHeroAnimations(this.isDesktop, this.isMobile, this.reduceMotion)
     setupStations(this.isDesktop, this.isMobile, this.reduceMotion)
@@ -74,24 +74,8 @@ export class Homepage {
     window.app.mainTimeline = gsap.timeline({})
 
     this.positionsAnimations = this.isMobile
-      ? [
-          [0, 0],
-          [() => -(window.innerHeight * 0.4), -25],
-          [() => -(window.innerHeight * 0.9), -55],
-          [() => -(window.innerHeight * 1.4), -85],
-          [() => -(window.innerHeight * 1.9), -115],
-          [() => -(window.innerHeight * 3), -180],
-          [],
-        ]
-      : [
-          [0, 0],
-          [() => -(window.innerHeight * 0.83), -105],
-          [() => -(window.innerHeight * 1.72), -215],
-          [() => -(window.innerHeight * 2.57), -320],
-          [() => -(window.innerHeight * 3.4), -425],
-          [() => -(window.innerHeight * 5), -600],
-          [],
-        ]
+      ? animations.stations.positionsMobile
+      : animations.stations.positionsDesktop
 
     this.positionsAnimations.forEach((pos, i) => {
       const id = i + 1
@@ -108,11 +92,13 @@ export class Homepage {
       type: 'wheel,touch',
       wheelSpeed: -1,
       onDown: () => {
+        console.log(this.positionsAnimations, this.currentIndex, this.isAnimating)
         if (this.currentIndex > 1 && !this.isAnimating) {
           this.triggerStationAnimation(this.currentIndex - 1)
         }
       },
       onUp: () => {
+        console.log(this.positionsAnimations, this.currentIndex, this.isAnimating)
         if (
           this.currentIndex < this.positionsAnimations!.length - 1 &&
           !this.isAnimating
@@ -129,6 +115,7 @@ export class Homepage {
     const { selectors, animations } = CONFIG
     const oldStation = `${selectors.station}-${this.currentIndex}`
     const newStation = `${selectors.station}-${newStationNumber}`
+
     const oldStationBoxes = `${oldStation} ${selectors.stationBoxes} > *`
     const newStationBoxes = `${newStation} ${selectors.stationBoxes} > *`
     const {
@@ -137,6 +124,7 @@ export class Homepage {
       boxesStaggerOut,
       boxesEase,
       boxesYOffsetFactor,
+      finishThreshold
     } = animations.stations
 
     const direction =
@@ -153,7 +141,7 @@ export class Homepage {
     const that = this
     this.currentAnimation = gsap.timeline({
       onUpdate() {
-        if (this.progress() > 0.5) {
+        if (this.progress() >= finishThreshold) {
           that.isAnimating = false
         }
       },
@@ -176,6 +164,7 @@ export class Homepage {
           : this.currentIndex - 2
 
       const [x, yPercent] = this.positionsAnimations[posId]
+      console.log("New pos: ", x, yPercent)
 
       const isAnimatingFooterUp = newStationNumber === this.positionsAnimations.length - 2 && direction === 'up'
       this.isAnimating = true

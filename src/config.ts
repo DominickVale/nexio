@@ -86,12 +86,22 @@ const config = {
       },
     },
     preloader: {
-      barDuration: 0.3,
-      barEase: 'power1.out',
-      borderDuration: 0.8,
-      borderEase: 'power2.inOut',
-      hideDuration: 0.5,
-      hideEase: 'power4.inOut',
+      bar: {
+        duration: 0.5,
+        ease: 'power1.out',
+      },
+      // FROM
+      border: {
+        scaleY: 0,
+        duration: 0.5,
+        ease: 'power1.out',
+      },
+      hide: {
+        autoAlpha: 0,
+        duration: 0.5,
+        delay: 0.5,
+        ease: 'power4.out',
+      },
     },
     hero: {
       defaultFridge: 5,
@@ -106,6 +116,28 @@ const config = {
       factoriesInEase: 'power3.out',
     },
     stations: {
+      // syntax:  [x, y]. if value is dynamic (changes on resize) use function
+      // in this case x depends on the innerHeight, which is dynamic, so we use a function.
+      // We use height for the x because the height of the stations is based on the height of the viewport.
+      positionsMobile: [
+        [0, 0], // no touchy
+        [() => -(window.innerHeight * 0.4), -25],
+        [() => -(window.innerHeight * 0.9), -55],
+        [() => -(window.innerHeight * 1.4), -85],
+        [() => -(window.innerHeight * 1.9), -115],
+        [() => -(window.innerHeight * 3), -180],
+        [], // no touchy
+      ],
+      positionsDesktop: [
+        [0, 0], // no touchy
+        [() => -(window.innerHeight * 0.83), -105],
+        [() => -(window.innerHeight * 1.72), -215],
+        [() => -(window.innerHeight * 2.57), -320],
+        [() => -(window.innerHeight * 3.4), -425],
+        [() => -(window.innerHeight * 5), -600],
+        [], // no touchy
+      ],
+      finishThreshold: 1, //0.5 = halfway through the anim
       boxesDuration: 1,
       boxesEase: 'power3.out',
       boxesStaggerIn: 0.1,

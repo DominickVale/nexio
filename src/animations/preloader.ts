@@ -6,124 +6,95 @@ import { CONFIG } from '../config'
 
 class Preloader {
   private progressBar: HTMLElement
+  private preloaderWrapper: HTMLElement
   private progressText: HTMLElement
   private borderElement: HTMLElement
-  private videos: HTMLVideoElement[]
+  private videos: NodeListOf<HTMLVideoElement>
+  private totalVideos: number
   private loadedVideos: number = 0
   private totalProgress: number = 0
+  private isCached: boolean = true
 
   constructor(
+    preloaderWrapper: HTMLElement,
     progressBar: HTMLElement,
     progressText: HTMLElement,
     borderElement: HTMLElement,
     videos: NodeListOf<HTMLVideoElement>,
   ) {
+    this.preloaderWrapper = preloaderWrapper
     this.progressBar = progressBar
     this.progressText = progressText
     this.borderElement = borderElement
-    this.videos = Array.from(videos)
+    this.videos = videos
 
-    this.setup()
+    this.totalVideos = this.videos.length
+
+    this.init()
   }
 
-  private setup(): void {
-    this.videos.forEach((video, index) => {
-      this.preloadVideo(video, index)
+  private init(): void {
+    this.videos.forEach(video => {
+      if (video.readyState === 4) {
+        this.onVideoLoaded()
+      } else {
+        this.isCached = false
+        video.addEventListener('loadedmetadata', this.onVideoLoaded.bind(this))
+        video.addEventListener('progress', this.onVideoProgress.bind(this))
+      }
+    })
+
+    if (this.isCached) {
+      this.simulateCachedProgress()
+    }
+  }
+
+  private simulateCachedProgress(): void {
+    gsap.to(this, {
+      totalProgress: 100,
+      duration: 1.5,
+      ease: "power2.inOut",
+      onUpdate: () => this.updateProgress(),
     })
   }
 
-  private preloadVideo(video: HTMLVideoElement, index: number): void {
-    const sources = video.querySelectorAll('source')
-    const validSources = Array.from(sources).filter(source => {
-      const mediaQuery = source.getAttribute('media')
-      if (!mediaQuery) return true
-      return window.matchMedia(mediaQuery).matches
-    })
-
-    if (validSources.length === 0) {
-      console.error('No valid source found for video:', video)
-      this.updateProgress(index, 100)
-      return
-    }
-
-    const matchingSource = validSources[0]
-    const videoUrl = matchingSource.src
-    const xhr = new XMLHttpRequest()
-    xhr.open('GET', videoUrl, true)
-    xhr.responseType = 'blob'
-
-    xhr.onprogress = event => {
-      if (event.lengthComputable) {
-        const percentComplete = (event.loaded / event.total) * 100
-        this.updateProgress(index, percentComplete)
-      }
-    }
-
-    xhr.onload = () => {
-      if (xhr.status === 200) {
-        this.updateProgress(index, 100)
-      }
-    }
-
-    xhr.onerror = () => {
-      console.error('Error loading video:', videoUrl)
-      this.updateProgress(index, 100)
-    }
-
-    xhr.send()
+  private onVideoLoaded(): void {
+    this.loadedVideos++
+    this.updateProgress()
   }
 
-  private updateProgress(videoIndex: number, progress: number): void {
-    const previousProgress = this.totalProgress
-    const progressPerVideo = 100 / this.videos.length
+  private onVideoProgress(event: Event): void {
+    const video = event.target as HTMLVideoElement
+    if (video.buffered.length > 0) {
+      const progress = (video.buffered.end(0) / video.duration) * 100
+      this.totalProgress += progress - this.totalProgress / this.totalVideos
+      this.updateProgress()
+    }
+  }
 
-    // Update progress for this video
-    const videoProgress = (progress / 100) * progressPerVideo
-    this.totalProgress = Math.min(
-      100,
-      this.totalProgress -
-        progressPerVideo * (videoIndex / this.videos.length) +
-        videoProgress,
-    )
+  private updateProgress(): void {
+    const overallProgress = (this.loadedVideos / this.totalVideos) * 100
+    const combinedProgress = this.isCached ? this.totalProgress : (overallProgress + this.totalProgress) / 2
 
-    // Update UI
-    const progressPercent = Math.round(this.totalProgress)
     gsap.to(this.progressBar, {
-      width: `${progressPercent}%`,
-      duration: CONFIG.animations.preloader.barDuration,
-      ease: CONFIG.animations.preloader.barEase,
+      width: `${combinedProgress}%`,
+      ...CONFIG.animations.preloader.bar,
     })
-    this.progressText.textContent = `${progressPercent}%`
 
-    // Check if this video is newly completed
-    if (progress === 100 && progress > previousProgress) {
-      this.loadedVideos++
-      if (this.loadedVideos === this.videos.length) {
-        this.complete()
-      }
+    this.progressText.textContent = `${Math.min(Math.round(combinedProgress), 100)}%`
+
+    if (combinedProgress >= 100) {
+      this.onLoadComplete()
     }
   }
 
-  private complete(): void {
-    const { barDuration, barEase, hideDuration, hideEase } = CONFIG.animations.preloader
-    // Animate border to viewport size
-    gsap.to(this.borderElement, {
-      width: window.innerWidth - 32, // 16px padding on each side
-      height: window.innerHeight - 32,
-      duration: barDuration,
-      ease: barEase,
+  private onLoadComplete(): void {
+    gsap.from(this.borderElement, CONFIG.animations.preloader.border)
+
+    gsap.to(this.preloaderWrapper, {
+      ...CONFIG.animations.preloader.hide,
       onComplete: () => {
-        // Hide preloader
-        gsap.to(this.borderElement.parentElement!, {
-          opacity: 0,
-          duration: hideDuration,
-          ease: hideEase,
-          onComplete: () => {
-            if (this.borderElement.parentElement) {
-              this.borderElement.parentElement.style.display = 'none'
-            }
-          },
-        })
+        this.preloaderWrapper.style.display = 'none'
       },
     })
   }
@@ -134,12 +105,24 @@ export function setupPreloader(
   isMobile: boolean,
   reduceMotion: boolean,
 ) {
-  const progressBar = $('.progress-bar') as HTMLElement
-  const progressText = $('.progress-text') as HTMLElement
-  const borderElement = $('.border-element') as HTMLElement
+  const progressBar = $(
+    '#preloader-progress .inner-progress-bar',
+  ) as HTMLElement
+  const preloaderWrapper = $('#preloader') as HTMLElement
+  const progressText = $('#preloader-text') as HTMLElement
+  const borderElement = $('#preloader-border') as HTMLElement
   const videos = $all('video') as NodeListOf<HTMLVideoElement>
 
   if (progressBar && progressText && borderElement && videos.length > 0) {
-    new Preloader(progressBar, progressText, borderElement, videos)
+    new Preloader(
+      preloaderWrapper,
+      progressBar,
+      progressText,
+      borderElement,
+      videos,
+    )
+    if (CONFIG.debug) {
+      console.log('[NEXIO]: preloader loaded')
+    }
   }
 }
