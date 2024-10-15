@@ -231,12 +231,12 @@ export function hideHero(isDesktop: boolean) {
       duration: animations.default.duration,
       ease: animations.default.ease
     }, "<")
-    .to(selectors.logo, {
+    .to(selectors.logoBlueprint, {
       autoAlpha: 0,
       duration: animations.default.duration,
       ease: animations.default.ease
     }, "<")
-    .to(selectors.orangeLogo, {
+    .to(selectors.logo, {
       autoAlpha: 1,
       duration: animations.default.duration,
       ease: animations.default.ease

@@ -9,6 +9,7 @@ const config = {
   selectors: {
     box: '#draggable-box',
     boxes: '.draggable-boxes',
+    backToTop: "#back-to-top",
     cursor: '#custom-cursor',
     cursorHoverables: ['button', 'a', '#active-station-button'],
     boxClass: '.draggable-box',
@@ -25,8 +26,8 @@ const config = {
     stationTitleClass: '.white-text-box',
     stationBoxes: '.station-boxes',
     navButton: '#nav-button',
+    logoBlueprint: '#logo-blueprint',
     logo: '#logo',
-    orangeLogo: '#logo-orange',
   },
   animations: {
     default: {

@@ -1,7 +1,7 @@
 import gsap from 'gsap'
 import { debounce } from 'lodash'
 import { CONFIG } from '../config'
-import { $all } from '../utils'
+import { $, $all } from '../utils'
 import { setupHeroAnimations } from './hero'
 import { setupStations } from './stations'
 import Observer from 'gsap/Observer'
@@ -107,9 +107,15 @@ export class Homepage {
       tolerance: 10,
       preventDefault: true,
     })
+    $(selectors.backToTop)!.addEventListener('click', () => {
+      this.triggerStationAnimation(1, true)
+    })
   }
 
-  public triggerStationAnimation(newStationNumber: number) {
+  public triggerStationAnimation(
+    newStationNumber: number,
+    fromBottomToTop?: boolean,
+  ) {
     const { selectors, animations } = CONFIG
     const oldStation = `${selectors.station}-${this.currentIndex}`
     const newStation = `${selectors.station}-${newStationNumber}`
@@ -125,11 +131,12 @@ export class Homepage {
       finishThresholdDesktop,
       finishThresholdMobile,
       factoriesScrollDuration,
-      factoriesScrollEase
+      factoriesScrollEase,
     } = animations.stations
 
-    const direction =
-      newStationNumber === this.currentIndex
+    const direction = fromBottomToTop
+      ? 'up'
+      : newStationNumber === this.currentIndex
         ? 'same'
         : newStationNumber > this.currentIndex
           ? 'down'
@@ -142,7 +149,9 @@ export class Homepage {
     const that = this
     this.currentAnimation = gsap.timeline({
       onUpdate() {
-        const threshold = that.isMobile ? finishThresholdMobile : finishThresholdDesktop
+        const threshold = that.isMobile
+          ? finishThresholdMobile
+          : finishThresholdDesktop
         if (this.progress() >= threshold) {
           that.isAnimating = false
         }
@@ -165,13 +174,25 @@ export class Homepage {
           ? newStationNumber - 1
           : this.currentIndex - 2
 
-      const [x, yPercent] = this.positionsAnimations[posId]
+      const [x, yPercent] = this.positionsAnimations[fromBottomToTop ? 0 : posId]
 
-      const isAnimatingFooterUp = newStationNumber === this.positionsAnimations.length - 2 && direction === 'up'
+      const isAnimatingFooterUp =
+        fromBottomToTop ||
+        (newStationNumber === this.positionsAnimations.length - 2 &&
+          direction === 'up')
       this.isAnimating = true
       this.currentAnimation
         .set([oldStation, oldStationBoxes], { clearProps: 'zIndex' })
-        .to(selectors.factoriesContainer, { x, yPercent, duration: factoriesScrollDuration, ease: factoriesScrollEase }, isAnimatingFooterUp ? animations.footer.hide.duration / 2 : 0)
+        .to(
+          selectors.factoriesContainer,
+          {
+            x,
+            yPercent,
+            duration: factoriesScrollDuration,
+            ease: factoriesScrollEase,
+          },
+          isAnimatingFooterUp ? animations.footer.hide.duration / 2 : 0,
+        )
         .to(
           oldStationBoxes,
           {
@@ -208,9 +229,9 @@ export class Homepage {
         )
 
       if (newStationNumber === this.positionsAnimations.length - 1) {
-        this.currentAnimation.to('.footer-mask', animations.footer.reveal, "<")
+        this.currentAnimation.to('.footer-mask', animations.footer.reveal, '<')
       } else if (isAnimatingFooterUp) {
-        this.currentAnimation.to('.footer-mask', animations.footer.hide, "0")
+        this.currentAnimation.to('.footer-mask', animations.footer.hide, '0')
       }
     }
     this.currentIndex = newStationNumber
