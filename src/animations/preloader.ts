@@ -3,6 +3,7 @@ import { Draggable } from 'gsap/all'
 import StationSelector from './station-selector'
 import { $, $all } from '../utils'
 import { CONFIG } from '../config'
+import CustomEase from 'gsap/CustomEase'
 
 class Preloader {
   private progressBar: HTMLElement
@@ -10,78 +11,156 @@ class Preloader {
   private progressText: HTMLElement
   private borderElement: HTMLElement
   private videos: NodeListOf<HTMLVideoElement>
+  private images: NodeListOf<HTMLImageElement>
+  private backgroundTiles: NodeListOf<HTMLElement>
   private totalVideos: number
-  private loadedVideos: number = 0
-  private totalProgress: number = 0
-  private isCached: boolean = true
+  private totalImages: number
+  private loadedImages: number = 0
+  private videoProgress: number[] = []
+  finished: boolean
+  loadedVideos: number
+  endTL: gsap.core.Timeline
 
-  constructor(
-    preloaderWrapper: HTMLElement,
-    progressBar: HTMLElement,
-    progressText: HTMLElement,
-    borderElement: HTMLElement,
-    videos: NodeListOf<HTMLVideoElement>,
-  ) {
-    this.preloaderWrapper = preloaderWrapper
-    this.progressBar = progressBar
-    this.progressText = progressText
-    this.borderElement = borderElement
-    this.videos = videos
-
+  constructor() {
+    this.progressBar = $(
+      '#preloader-progress .inner-progress-bar',
+    ) as HTMLElement
+    this.preloaderWrapper = $('#preloader') as HTMLElement
+    this.progressText = $('#preloader-text') as HTMLElement
+    this.borderElement = $('#preloader-border') as HTMLElement
+    this.images = $all(
+      '#preloader-fridges > img',
+    ) as NodeListOf<HTMLImageElement>
+    this.videos = $all('video') as NodeListOf<HTMLVideoElement>
+    this.backgroundTiles = $all('.background-tiles')
     this.totalVideos = this.videos.length
-
+    this.totalImages = this.images.length
+    this.loadedVideos = 0
+    this.finished = false
+    this.endTL = gsap
+      .timeline({ paused: true })
+      .to(this.borderElement, CONFIG.animations.preloader.border)
+      .to(this.preloaderWrapper, {
+        ...CONFIG.animations.preloader.hide,
+        onComplete: () => {
+          this.preloaderWrapper.style.display = 'none'
+        },
+      })
     this.init()
   }
 
   private init(): void {
-    this.videos.forEach(video => {
-      if (video.readyState === 4) {
-        this.onVideoLoaded()
+    this.fadeInElements()
+    this.preloadImages()
+  }
+
+  private fadeInElements(): void {
+    gsap
+      .timeline()
+      .from(this.backgroundTiles, CONFIG.animations.preloader.bgTilesFadeIn)
+      .fromTo(
+        [this.progressBar.parentElement, this.borderElement],
+        CONFIG.animations.preloader.barFadeIn.from,
+        CONFIG.animations.preloader.barFadeIn.to,
+        '<+50%',
+      )
+  }
+
+  private preloadImages(): void {
+    if (this.totalImages === 0) {
+      this.preloadVideos()
+      return
+    }
+
+    let loadedImages = 0
+    const checkAllImagesLoaded = () => {
+      if (++loadedImages === this.totalImages) {
+        this.loadedImages = loadedImages
+        this.preloadVideos()
       } else {
-        this.isCached = false
-        video.addEventListener('loadedmetadata', this.onVideoLoaded.bind(this))
-        video.addEventListener('progress', this.onVideoProgress.bind(this))
+        this.updateProgress()
+      }
+    }
+
+    this.images.forEach(image => {
+      if (image.complete) {
+        checkAllImagesLoaded()
+      } else {
+        image.addEventListener('load', checkAllImagesLoaded)
+        image.addEventListener('error', () => {
+          console.error('Could not load image', image.src)
+          checkAllImagesLoaded()
+        })
       }
     })
 
-    if (this.isCached) {
-      this.simulateCachedProgress()
-    }
-  }
-
-  private simulateCachedProgress(): void {
-    gsap.to(this, {
-      totalProgress: 100,
-      duration: 1.5,
-      ease: "power2.inOut",
-      onUpdate: () => this.updateProgress(),
-    })
-  }
-
-  private onVideoLoaded(): void {
-    this.loadedVideos++
+    // Force progress update in case all images are already cached
     this.updateProgress()
   }
 
-  private onVideoProgress(event: Event): void {
-    const video = event.target as HTMLVideoElement
-    if (video.buffered.length > 0) {
-      const progress = (video.buffered.end(0) / video.duration) * 100
-      this.totalProgress += progress - this.totalProgress / this.totalVideos
-      this.updateProgress()
+  private preloadVideos(): void {
+    if (this.totalVideos === 0) {
+      this.onLoadComplete()
+      return
     }
+
+    this.videoProgress = new Array(this.totalVideos).fill(0)
+
+    let loadedVideos = 0
+    const checkAllVideosLoaded = () => {
+      if (++loadedVideos === this.totalVideos) {
+        this.loadedVideos = loadedVideos
+        this.onLoadComplete()
+      } else {
+        this.updateProgress()
+      }
+    }
+
+    this.videos.forEach((video, index) => {
+      if (video.readyState >= 4) {
+        // HAVE_ENOUGH_DATA
+        this.videoProgress[index] = 100
+        checkAllVideosLoaded()
+      } else {
+        video.addEventListener('canplaythrough', () => {
+          this.videoProgress[index] = 100
+          checkAllVideosLoaded()
+        })
+        video.addEventListener('progress', () => {
+          if (video.buffered.length > 0) {
+            const progress = (video.buffered.end(0) / video.duration) * 100
+            this.videoProgress[index] = progress
+            this.updateProgress()
+          }
+        })
+        // Force load for cached videos
+        video.load()
+      }
+    })
+
+    // Force progress update in case all videos are already cached
+    this.updateProgress()
   }
 
   private updateProgress(): void {
-    const overallProgress = (this.loadedVideos / this.totalVideos) * 100
-    const combinedProgress = this.isCached ? this.totalProgress : (overallProgress + this.totalProgress) / 2
+    if (this.finished) return
+    const imageProgress = (this.loadedImages / this.totalImages) * 50
+    const videoProgress =
+      (this.videoProgress.reduce((a, b) => a + b, 0) /
+        (this.totalVideos * 100)) *
+      50
+    const overallProgress = imageProgress + videoProgress
+
+    const combinedProgress = Math.min(overallProgress, 100)
 
     gsap.to(this.progressBar, {
       width: `${combinedProgress}%`,
       ...CONFIG.animations.preloader.bar,
     })
 
-    this.progressText.textContent = `${Math.min(Math.round(combinedProgress), 100)}%`
+    if (CONFIG.debug)
+      console.log(`[NEXIO]: Progress: ${combinedProgress.toFixed(2)}%`)
+    this.progressText.textContent = `Loading ${Math.round(combinedProgress || 0)}%`
 
     if (combinedProgress >= 100) {
       this.onLoadComplete()
@@ -89,14 +168,13 @@ class Preloader {
   }
 
   private onLoadComplete(): void {
-    gsap.from(this.borderElement, CONFIG.animations.preloader.border)
-
-    gsap.to(this.preloaderWrapper, {
-      ...CONFIG.animations.preloader.hide,
-      onComplete: () => {
-        this.preloaderWrapper.style.display = 'none'
-      },
+    this.finished = true
+    this.progressText.textContent = 'Loading 100%'
+    gsap.to(this.progressBar, {
+      width: `100%`,
+      ...CONFIG.animations.preloader.bar,
     })
+    this.endTL.play()
   }
 }
 
@@ -105,24 +183,10 @@ export function setupPreloader(
   isMobile: boolean,
   reduceMotion: boolean,
 ) {
-  const progressBar = $(
-    '#preloader-progress .inner-progress-bar',
-  ) as HTMLElement
-  const preloaderWrapper = $('#preloader') as HTMLElement
-  const progressText = $('#preloader-text') as HTMLElement
-  const borderElement = $('#preloader-border') as HTMLElement
-  const videos = $all('video') as NodeListOf<HTMLVideoElement>
+  CustomEase.create('preloaderBorder', CONFIG.eases.preloaderBorder)
 
-  if (progressBar && progressText && borderElement && videos.length > 0) {
-    new Preloader(
-      preloaderWrapper,
-      progressBar,
-      progressText,
-      borderElement,
-      videos,
-    )
-    if (CONFIG.debug) {
-      console.log('[NEXIO]: preloader loaded')
-    }
+  new Preloader()
+  if (CONFIG.debug) {
+    console.log('[NEXIO]: preloader loaded')
   }
 }

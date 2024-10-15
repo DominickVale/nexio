@@ -86,21 +86,33 @@ const config = {
       },
     },
     preloader: {
+      bgTilesFadeIn: {
+        opacity: 0,
+        duration: 0.5,
+        stagger: 0.1,
+        ease: 'power2.inOut',
+      },
       bar: {
         duration: 0.5,
         ease: 'power1.out',
       },
-      // FROM
+      barFadeIn: {
+        from: { autoAlpha: 0 },
+        to: {
+          autoAlpha: 1,
+          duration: 1,
+          ease: 'power3.in',
+        },
+      },
       border: {
-        scaleY: 0,
-        duration: 0.5,
-        ease: 'power1.out',
+        height: '100%',
+        duration: 2,
+        ease: 'preloaderBorder',
       },
       hide: {
         autoAlpha: 0,
-        duration: 0.5,
-        delay: 0.5,
-        ease: 'power4.out',
+        duration: 1,
+        ease: 'preloaderBorder',
       },
     },
     hero: {
@@ -189,6 +201,10 @@ const config = {
     'docs & devnet',
     'join our community',
   ],
+  eases: {
+    preloaderBorder:
+      'M0,0 C0.29,0 0.399,0.069 0.458,0.12 0.527,0.178 0.6,0.356 0.6,0.5 0.6,0.706 0.704,1 1,1 ',
+  },
 }
 merge(config, window.NEXIO_CONFIG)
 
