@@ -92,13 +92,11 @@ export class Homepage {
       type: 'wheel,touch',
       wheelSpeed: -1,
       onDown: () => {
-        console.log(this.positionsAnimations, this.currentIndex, this.isAnimating)
         if (this.currentIndex > 1 && !this.isAnimating) {
           this.triggerStationAnimation(this.currentIndex - 1)
         }
       },
       onUp: () => {
-        console.log(this.positionsAnimations, this.currentIndex, this.isAnimating)
         if (
           this.currentIndex < this.positionsAnimations!.length - 1 &&
           !this.isAnimating
@@ -124,7 +122,10 @@ export class Homepage {
       boxesStaggerOut,
       boxesEase,
       boxesYOffsetFactor,
-      finishThreshold
+      finishThresholdDesktop,
+      finishThresholdMobile,
+      factoriesScrollDuration,
+      factoriesScrollEase
     } = animations.stations
 
     const direction =
@@ -141,7 +142,8 @@ export class Homepage {
     const that = this
     this.currentAnimation = gsap.timeline({
       onUpdate() {
-        if (this.progress() >= finishThreshold) {
+        const threshold = that.isMobile ? finishThresholdMobile : finishThresholdDesktop
+        if (this.progress() >= threshold) {
           that.isAnimating = false
         }
       },
@@ -164,13 +166,12 @@ export class Homepage {
           : this.currentIndex - 2
 
       const [x, yPercent] = this.positionsAnimations[posId]
-      console.log("New pos: ", x, yPercent)
 
       const isAnimatingFooterUp = newStationNumber === this.positionsAnimations.length - 2 && direction === 'up'
       this.isAnimating = true
       this.currentAnimation
         .set([oldStation, oldStationBoxes], { clearProps: 'zIndex' })
-        .to(selectors.factoriesContainer, { x, yPercent }, isAnimatingFooterUp ? animations.footer.hide.duration / 2 : 0)
+        .to(selectors.factoriesContainer, { x, yPercent, duration: factoriesScrollDuration, ease: factoriesScrollEase }, isAnimatingFooterUp ? animations.footer.hide.duration / 2 : 0)
         .to(
           oldStationBoxes,
           {

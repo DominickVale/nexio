@@ -149,7 +149,10 @@ const config = {
         [() => -(window.innerHeight * 5), -600],
         [], // no touchy
       ],
-      finishThreshold: 1, //0.5 = halfway through the anim
+      factoriesScrollDuration: 1, // videos moving from bottom right to top left
+      factoriesScrollEase: 'power4.out', // videos moving from bottom right to top left
+      finishThresholdDesktop: 0.5, //0.5 = halfway through the anim
+      finishThresholdMobile: 0.3, //0.5 = halfway through the anim
       boxesDuration: 1,
       boxesEase: 'power3.out',
       boxesStaggerIn: 0.1,
