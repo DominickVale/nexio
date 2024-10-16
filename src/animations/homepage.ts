@@ -5,6 +5,7 @@ import { $, $all } from '../utils'
 import { setupHeroAnimations } from './hero'
 import { setupStations } from './stations'
 import Observer from 'gsap/Observer'
+import { type Hero } from './hero.ts'
 
 export class Homepage {
   videos: NodeListOf<HTMLVideoElement> | null
@@ -15,6 +16,7 @@ export class Homepage {
   currentAnimation: gsap.core.Timeline | undefined
   positionsAnimations: (number | (() => number))[][] | undefined
   isAnimating: boolean
+  hero: Hero | undefined
 
   constructor(isDesktop: boolean, isMobile: boolean, reduceMotion: boolean) {
     this.videos = null
@@ -31,7 +33,11 @@ export class Homepage {
   setup() {
     const { selectors, animations } = CONFIG
 
-    setupHeroAnimations(this.isDesktop, this.isMobile, this.reduceMotion)
+    this.hero = setupHeroAnimations(
+      this.isDesktop,
+      this.isMobile,
+      this.reduceMotion,
+    )
     setupStations(this.isDesktop, this.isMobile, this.reduceMotion)
 
     this.videos = $all('video') as NodeListOf<HTMLVideoElement>
@@ -202,7 +208,7 @@ export class Homepage {
             '#active-station-button .label',
             {
               typewrite: {
-                value: 'station ' + (newStationNumber),
+                value: 'station ' + newStationNumber,
                 maxScrambleChars: 3,
               },
               duration: CONFIG.animations.typewriter.defaultDuration / 2,

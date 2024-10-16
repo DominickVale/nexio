@@ -14,8 +14,11 @@ const config = {
     cursorHoverables: ['button', 'a', '#active-station-button'],
     boxClass: '.draggable-box',
     hero: '#hero',
+    heroSidebar: '.hero-sidebar',
     heroButton: '#hero-button',
     heroButtonMobile: '#hero-button-tablet',
+    heroFridge: '.fridge-big-preview',
+    heroSpecificationBox: '.specification-box',
     factoriesContainer: '#factories-animations-container',
     stationSelection: '#station-selection',
     activeStationDropdown: '#stationLinks',
@@ -117,8 +120,32 @@ const config = {
         duration: 1,
         ease: 'preloaderBorder',
       },
+      fridgesHide: {
+        autoAlpha: 0,
+        scale: 0,
+        duration: 0.5,
+        ease: "power3.in"
+      }
     },
     hero: {
+      bigBoxAppearFrom: {
+        scale: 0.8,
+        autoAlpha: 0,
+        duration: 1,
+        ease: "power3.inOut",
+      },
+      specBoxAppearFrom: {
+        x: () => -window.innerWidth / 8,
+        autoAlpha: 0,
+        duration: 1,
+        ease: "power3.inOut",
+      },
+      sidebarAppearFrom: {
+        x: () => window.innerWidth + (window.innerWidth / 8),
+        autoAlpha: 0,
+        duration: 1,
+        ease: "power3.inOut",
+      },
       defaultFridge: 5,
       fridgeInDuration: 0.5,
       fridgeInEase: 'power4.inOut',

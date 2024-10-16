@@ -40,12 +40,14 @@ class Preloader {
     this.endTL = gsap
       .timeline({ paused: true })
       .to(this.borderElement, CONFIG.animations.preloader.border)
+      .to(this.images, CONFIG.animations.preloader.fridgesHide)
       .to(this.preloaderWrapper, {
         ...CONFIG.animations.preloader.hide,
         onComplete: () => {
           this.preloaderWrapper.style.display = 'none'
+          window.app.onPreloadComplete()
         },
-      })
+      }, "<+20%")
     this.init()
   }
 

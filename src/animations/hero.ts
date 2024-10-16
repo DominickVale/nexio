@@ -4,7 +4,7 @@ import { CONFIG } from '../config'
 import { $ } from '../utils'
 import { animateStationSection } from './stations'
 
-class FridgeHoverAnim {
+export class Hero {
   currIdx: number
   fridges: HTMLElement[]
   links: HTMLElement[]
@@ -14,6 +14,7 @@ class FridgeHoverAnim {
   isDesktop: boolean
   reduceMotion: boolean
   hexCodeEl: HTMLElement | null
+  animateInTL: gsap.core.Timeline
 
   constructor(isDesktop: boolean, isMobile: boolean, reduceMotion: boolean) {
     this.currIdx = CONFIG.animations.hero.defaultFridge
@@ -25,6 +26,7 @@ class FridgeHoverAnim {
     this.isDesktop = isDesktop
     this.isMobile = isMobile
     this.reduceMotion = reduceMotion
+    this.animateInTL = gsap.timeline()
   }
 
   setup() {
@@ -79,6 +81,7 @@ class FridgeHoverAnim {
         this.handleMouseLeave(),
       )
     }
+    this.animateInTL = this.createAnimateInTL()
   }
 
   handleClick(link: HTMLElement, isDesktop: boolean) {
@@ -150,6 +153,21 @@ class FridgeHoverAnim {
     this.animateFridges(currentFridge, defaultFridge, direction)
     this.currIdx = CONFIG.animations.hero.defaultFridge
   }
+
+  createAnimateInTL() {
+    const { animations, selectors } = CONFIG
+    const { heroFridge, heroSpecificationBox, heroSidebar } = selectors
+    console.log('animating in hero')
+    return gsap
+      .timeline({ paused: true })
+      .from(heroFridge, animations.hero.bigBoxAppearFrom)
+      .from(heroSpecificationBox, animations.hero.specBoxAppearFrom, "<")
+      .from(heroSidebar, animations.hero.sidebarAppearFrom, "<")
+  }
+
+  animateIn() {
+    this.animateInTL.play()
+  }
 }
 
 ///////
@@ -162,9 +180,9 @@ export function setupHeroAnimations(
   reduceMotion: boolean,
 ) {
   const { selectors } = CONFIG
-  const fridgeHoverAnim = new FridgeHoverAnim(isDesktop, isMobile, reduceMotion)
+  const hero = new Hero(isDesktop, isMobile, reduceMotion)
 
-  fridgeHoverAnim.setup()
+  hero.setup()
 
   function onClickHero(e: MouseEvent) {
     e.preventDefault()
@@ -179,6 +197,7 @@ export function setupHeroAnimations(
 
   $(selectors.heroButton)?.addEventListener('click', onClickHero)
   $(selectors.heroButtonMobile)?.addEventListener('click', onClickHero)
+  return hero
 }
 
 //
@@ -187,11 +206,8 @@ export function setupHeroAnimations(
 
 export function hideHero(isDesktop: boolean) {
   const { selectors, animations } = CONFIG
-  const {
-    heroHideEase,
-    heroHideDuration,
-  } = animations.hero
-    const { factoriesScrollDuration, factoriesScrollEase } = animations.stations
+  const { heroHideEase, heroHideDuration } = animations.hero
+  const { factoriesScrollDuration, factoriesScrollEase } = animations.stations
   window.app.heroShown = false
   window.app.cursor.setMode('default')
   console.log(factoriesScrollDuration)
@@ -226,22 +242,37 @@ export function hideHero(isDesktop: boolean) {
         ease: factoriesScrollEase,
       },
       '<',
-    ).to(selectors.navButton, {
-      onStart: () => {gsap.set(selectors.navButton, {display: 'inline-flex'})},
-      autoAlpha: 1,
-      duration: animations.default.duration,
-      ease: animations.default.ease
-    }, "<")
-    .to(selectors.logoBlueprint, {
-      autoAlpha: 0,
-      duration: animations.default.duration,
-      ease: animations.default.ease
-    }, "<")
-    .to(selectors.logo, {
-      autoAlpha: 1,
-      duration: animations.default.duration,
-      ease: animations.default.ease
-    }, "<")
+    )
+    .to(
+      selectors.navButton,
+      {
+        onStart: () => {
+          gsap.set(selectors.navButton, { display: 'inline-flex' })
+        },
+        autoAlpha: 1,
+        duration: animations.default.duration,
+        ease: animations.default.ease,
+      },
+      '<',
+    )
+    .to(
+      selectors.logoBlueprint,
+      {
+        autoAlpha: 0,
+        duration: animations.default.duration,
+        ease: animations.default.ease,
+      },
+      '<',
+    )
+    .to(
+      selectors.logo,
+      {
+        autoAlpha: 1,
+        duration: animations.default.duration,
+        ease: animations.default.ease,
+      },
+      '<',
+    )
 }
 
 //@ts-ignore just for debugging

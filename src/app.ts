@@ -61,4 +61,9 @@ export default class App {
       console.log('[NEXIO]: NEXIOS_CONFIG: ', CONFIG)
     }
   }
+  onPreloadComplete(){
+    if(this.isHomepage && this.homePage?.hero){
+      this.homePage.hero.animateIn()
+    }
+  }
 }
