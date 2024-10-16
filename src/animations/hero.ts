@@ -194,6 +194,7 @@ export function hideHero(isDesktop: boolean) {
     const { factoriesScrollDuration, factoriesScrollEase } = animations.stations
   window.app.heroShown = false
   window.app.cursor.setMode('default')
+  console.log(factoriesScrollDuration)
   gsap
     .timeline()
     .set('body', { overflow: 'auto' })
@@ -221,7 +222,7 @@ export function hideHero(isDesktop: boolean) {
         '--left': isDesktop ? '100.5vw' : '115vw',
         '--max-left': isDesktop ? '35vw' : '40vw',
         '--top': isDesktop ? '-2vh' : '5vh',
-        duration: factoriesScrollDuration,
+        duration: factoriesScrollDuration * 2,
         ease: factoriesScrollEase,
       },
       '<',

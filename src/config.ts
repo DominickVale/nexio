@@ -17,9 +17,11 @@ const config = {
     heroButton: '#hero-button',
     heroButtonMobile: '#hero-button-tablet',
     factoriesContainer: '#factories-animations-container',
-    activeStationWrapper: '#station-selection',
+    stationSelection: '#station-selection',
     activeStationDropdown: '#stationLinks',
     activeStationBtn: '#active-station-button .station-selection-button',
+    stationSelectionFridge: '.fridge-preview-wrapper',
+    stationSelectionCopy: '.copy-wrapper',
     station: '#station',
     stationLinks: '#stationLinks > a',
     stationTitle: '#white-text-box',
@@ -196,6 +198,17 @@ const config = {
       easeOpen: 'power3.out',
       durationClose: 1,
       easeClose: 'power3.in',
+      fridgePreviewHoverColor: 'rgba(255, 255, 255, 0.1)',
+      hoverOpen: {
+        width: "auto",
+        duration:  0.5,
+        ease: "power4.out"
+      },
+      hoverClose: {
+        width: 0,
+        duration:  0.5,
+        ease: "power4.out"
+      }
     },
   },
   stations: [

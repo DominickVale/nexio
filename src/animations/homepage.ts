@@ -36,40 +36,6 @@ export class Homepage {
 
     this.videos = $all('video') as NodeListOf<HTMLVideoElement>
 
-    let lastTypewriterLabel = 1
-
-    const animateTypewriter = debounce(
-      (label: number) => {
-        if (label === lastTypewriterLabel) return
-
-        lastTypewriterLabel = label
-        gsap
-          .timeline()
-          .to('#active-station-button .label', {
-            typewrite: {
-              value: 'station ' + label,
-              maxScrambleChars: 3,
-            },
-            duration: CONFIG.animations.typewriter.defaultDuration / 2,
-            ease: 'power4.out',
-          })
-          .to(
-            '#active-station-button .title',
-            {
-              typewrite: {
-                value: CONFIG.stations[label - 1],
-                maxScrambleChars: CONFIG.animations.typewriter.maxScrambleChars,
-              },
-              duration: CONFIG.animations.typewriter.defaultDuration,
-              ease: CONFIG.animations.typewriter.ease,
-            },
-            '<+30%',
-          )
-      },
-      100,
-      { trailing: true },
-    )
-
     // Create the main timeline with ScrollTrigger
     window.app.mainTimeline = gsap.timeline({})
 
@@ -174,7 +140,8 @@ export class Homepage {
           ? newStationNumber - 1
           : this.currentIndex - 2
 
-      const [x, yPercent] = this.positionsAnimations[fromBottomToTop ? 0 : posId]
+      const [x, yPercent] =
+        this.positionsAnimations[fromBottomToTop ? 0 : posId]
 
       const isAnimatingFooterUp =
         fromBottomToTop ||
@@ -228,10 +195,59 @@ export class Homepage {
           this.currentIndex ? '>-0.25' : 0,
         )
 
+      if (newStationNumber < this.positionsAnimations.length - 1) {
+        gsap
+          .timeline()
+          .to(
+            '#active-station-button .label',
+            {
+              typewrite: {
+                value: 'station ' + (newStationNumber),
+                maxScrambleChars: 3,
+              },
+              duration: CONFIG.animations.typewriter.defaultDuration / 2,
+              ease: 'power4.out',
+            },
+            '<',
+          )
+          .to(
+            '#active-station-button .title',
+            {
+              typewrite: {
+                value: CONFIG.stations[newStationNumber - 1],
+                maxScrambleChars: CONFIG.animations.typewriter.maxScrambleChars,
+              },
+              duration: CONFIG.animations.typewriter.defaultDuration,
+              ease: CONFIG.animations.typewriter.ease,
+            },
+            '<+30%',
+          )
+      }
+
       if (newStationNumber === this.positionsAnimations.length - 1) {
-        this.currentAnimation.to('.footer-mask', animations.footer.reveal, '<')
+        this.currentAnimation
+          .to('.footer-mask', animations.footer.reveal, '<')
+          .to(
+            selectors.stationSelection,
+            {
+              y: () => -window.innerHeight,
+              duration: animations.footer.reveal.duration,
+              ease: animations.footer.reveal.ease,
+            },
+            '<',
+          )
       } else if (isAnimatingFooterUp) {
-        this.currentAnimation.to('.footer-mask', animations.footer.hide, '0')
+        this.currentAnimation
+          .to('.footer-mask', animations.footer.hide, '0')
+          .to(
+            selectors.stationSelection,
+            {
+              y: 0,
+              duration: animations.footer.reveal.duration,
+              ease: animations.footer.reveal.ease,
+            },
+            '<',
+          )
       }
     }
     this.currentIndex = newStationNumber

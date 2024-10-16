@@ -4,7 +4,7 @@ import gsap from 'gsap'
 
 export default class StationSelector {
   currIdx: number
-  links: HTMLElement[]
+  buttons: HTMLElement[]
   wrapper: HTMLElement | null
   isMobile: boolean
   isDesktop: boolean
@@ -15,7 +15,7 @@ export default class StationSelector {
 
   constructor(isDesktop: boolean, isMobile: boolean, reduceMotion: boolean) {
     this.currIdx = 1
-    this.links = []
+    this.buttons = []
     this.wrapper = null
     this.isDesktop = isDesktop
     this.isMobile = isMobile
@@ -26,25 +26,42 @@ export default class StationSelector {
   }
 
   setup() {
-    this.links = gsap.utils.toArray<HTMLElement>(CONFIG.selectors.stationLinks)
-    this.wrapper = $(CONFIG.selectors.activeStationWrapper)
-    this.mainButton = $(CONFIG.selectors.activeStationBtn)
-    this.dropdown = $(CONFIG.selectors.activeStationDropdown)
-
+    const {
+      stationSelection,
+      activeStationBtn,
+      activeStationDropdown,
+      stationSelectionCopy,
+    } = CONFIG.selectors
+    this.buttons = gsap.utils.toArray<HTMLElement>(
+      CONFIG.selectors.stationLinks,
+    )
+    this.wrapper = $(stationSelection)
+    this.mainButton = $(activeStationBtn)
+    this.dropdown = $(activeStationDropdown)
     if (!this.wrapper || !this.mainButton || !this.dropdown) {
       console.error(this.wrapper, this.mainButton)
       throw Error('[NEXIO]: Elements not found')
     }
+    this.buttons.forEach((link, i) => {
+      gsap.set(
+        $(CONFIG.selectors.stationSelectionCopy, link),
+        { width: 0 }
+      )
 
-    this.links.forEach(link => {
       link.addEventListener('click', e => {
         e.preventDefault()
         this.handleClick(link, this.isDesktop)
       })
+      link.addEventListener('mouseenter', this.handleButtonHover.bind(this))
+      link.addEventListener('mouseout', this.handleButtonHoverOut.bind(this))
     })
-
-    this.dropdown.addEventListener('mouseleave', () => this.handleMouseLeave())
     this.mainButton.addEventListener('click', () => this.open())
+
+    // Add event listeners for focus management
+    document.addEventListener('click', this.handleOutsideClick.bind(this))
+    this.wrapper.addEventListener('focusin', this.handleFocusIn.bind(this))
+    this.wrapper.addEventListener('focusout', this.handleFocusOut.bind(this))
+    document.addEventListener('keydown', this.handleKeyDown.bind(this))
   }
 
   open() {
@@ -55,18 +72,33 @@ export default class StationSelector {
         duration: 0.2,
         ease: 'power4.out',
       })
-      .to(this.dropdown, {
-        height: 'auto',
-        duration: CONFIG.animations.stationSelector.durationOpen,
-        ease: CONFIG.animations.stationSelector.easeOpen,
-        onComplete: () => {
-          this.shown = true
+      .to(
+        this.dropdown,
+        {
+          height: 'auto',
+          duration: CONFIG.animations.stationSelector.durationOpen,
+          ease: CONFIG.animations.stationSelector.easeOpen,
+          onComplete: () => {
+            this.shown = true
+          },
         },
-      }, "<")
+        '<',
+      )
+      .to(
+        CONFIG.selectors.activeStationBtn,
+        {
+          borderStyle: 'solid',
+          backgroundColor: 'white',
+          duration: CONFIG.animations.stationSelector.durationOpen,
+          ease: CONFIG.animations.stationSelector.easeOpen,
+        },
+        '<',
+      )
   }
 
   close() {
-    gsap.timeline()
+    gsap
+      .timeline()
       .to(this.dropdown, {
         height: 0,
         duration: CONFIG.animations.stationSelector.durationOpen,
@@ -75,28 +107,92 @@ export default class StationSelector {
           this.shown = false
         },
       })
-      .to(this.dropdown, {
-        borderColor: 'transparent',
-        duration: CONFIG.animations.stationSelector.durationClose / 2,
-        ease: 'power4.in',
-      }, "<+=90%")
+      .to(
+        this.dropdown,
+        {
+          borderColor: 'transparent',
+          duration: CONFIG.animations.stationSelector.durationClose / 2,
+          ease: 'power4.in',
+        },
+        '<+=90%',
+      )
+
+      .to(
+        CONFIG.selectors.activeStationBtn,
+        {
+          borderStyle: 'dashed',
+          backgroundColor: 'var(--primary)',
+          duration: CONFIG.animations.stationSelector.durationOpen,
+          ease: CONFIG.animations.stationSelector.easeOpen,
+        },
+        '<',
+      )
+  }
+
+  handleButtonHover(e: MouseEvent) {
+    const t = e.currentTarget as HTMLElement
+    gsap
+      .timeline()
+      .to($(CONFIG.selectors.stationSelectionFridge, t), {
+        backgroundColor:
+          CONFIG.animations.stationSelector.fridgePreviewHoverColor,
+      })
+      .to(
+        $(CONFIG.selectors.stationSelectionCopy, t),
+        CONFIG.animations.stationSelector.hoverOpen,
+        '<',
+      )
+  }
+
+  handleButtonHoverOut(e: MouseEvent) {
+    const t = e.currentTarget as HTMLElement
+    gsap
+      .timeline()
+      .to($(CONFIG.selectors.stationSelectionFridge, t), {
+        backgroundColor: 'transparent',
+      })
+      .to(
+        $(CONFIG.selectors.stationSelectionCopy, t),
+        CONFIG.animations.stationSelector.hoverClose,
+        '<',
+      )
   }
 
   handleClick(link: HTMLElement, isDesktop: boolean) {
     const idx = Number(link.getAttribute('data-station'))
-    const labelPos = window.app.mainTimeline.scrollTrigger!.labelToScroll(
-      (idx).toString(),
-    )
-
     this.close()
-    gsap.to(window, {
-      scrollTo: labelPos,
-      duration: 1,
-      ease: 'power3.inOut',
-    })
+    window.app.homePage?.triggerStationAnimation(idx)
   }
 
-  handleMouseLeave() {
-    this.close()
+  handleOutsideClick(e: MouseEvent) {
+    if (
+      this.shown &&
+      this.wrapper &&
+      !this.wrapper.contains(e.target as Node)
+    ) {
+      this.close()
+    }
+  }
+
+  handleFocusIn(e: FocusEvent) {
+    if (!this.shown) {
+      this.open()
+    }
+  }
+
+  handleFocusOut(e: FocusEvent) {
+    // Use a setTimeout to check if the new activeElement is outside the wrapper
+    setTimeout(() => {
+      if (!this.wrapper?.contains(document.activeElement)) {
+        this.close()
+      }
+    }, 0)
+  }
+
+  handleKeyDown(e: KeyboardEvent) {
+    if (e.key === 'Escape' && this.shown) {
+      this.close()
+      this.mainButton?.focus() // Return focus to the main button
+    }
   }
 }
