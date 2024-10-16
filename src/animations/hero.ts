@@ -160,9 +160,20 @@ export class Hero {
     console.log('animating in hero')
     return gsap
       .timeline({ paused: true })
-      .from(heroFridge, animations.hero.bigBoxAppearFrom)
-      .from(heroSpecificationBox, animations.hero.specBoxAppearFrom, "<")
-      .from(heroSidebar, animations.hero.sidebarAppearFrom, "<")
+      .from(
+        heroFridge,
+        this.isMobile
+          ? animations.hero.bigBoxAppearFromMobile
+          : animations.hero.bigBoxAppearFrom,
+      )
+      .from(
+        heroSpecificationBox,
+        this.isMobile
+          ? animations.hero.specBoxAppearFromMobile
+          : animations.hero.specBoxAppearFrom,
+        '<',
+      )
+      .from(heroSidebar, animations.hero.sidebarAppearFrom, '<')
   }
 
   animateIn() {
@@ -210,7 +221,7 @@ export function hideHero(isDesktop: boolean) {
   const { factoriesScrollDuration, factoriesScrollEase } = animations.stations
   window.app.heroShown = false
   window.app.cursor.setMode('default')
-  console.log(factoriesScrollDuration)
+  window.app.homePage?.animateStationSelectorImgs(1)
   gsap
     .timeline()
     .set('body', { overflow: 'auto' })

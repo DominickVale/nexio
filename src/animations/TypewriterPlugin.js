@@ -70,7 +70,7 @@ export const TypewriterPlugin = {
     if (progress) {
       const randomChar = () => `<span class="${charClass}">${CHARS[Math.floor(Math.random() * CHARS.length)]}</span>`
       if (i === 0) {
-        str = ''
+        str = ' '
       } else if (i >= l) {
         str = text.join(delimiter)
       } else if ((speed || duration) * dp < 0.9) {
@@ -85,7 +85,7 @@ export const TypewriterPlugin = {
         str = nonScrambledPart + scrambledPart
       } else str = text.slice(0, i).join(delimiter)
     } else {
-      str = ''
+      str = ' '
     }
     data.previousProgress = progress
     target.innerHTML = fillChar === '&nbsp;' && ~str.indexOf('  ') ? str.split('  ').join('&nbsp;&nbsp;') : str

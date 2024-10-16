@@ -12,6 +12,7 @@ export default class StationSelector {
   shown: boolean
   mainButton: HTMLElement | null
   dropdown: HTMLElement | null
+  isOpen: boolean
 
   constructor(isDesktop: boolean, isMobile: boolean, reduceMotion: boolean) {
     this.currIdx = 1
@@ -23,6 +24,7 @@ export default class StationSelector {
     this.shown = false
     this.mainButton = null
     this.dropdown = null
+    this.isOpen = false
   }
 
   setup() {
@@ -43,10 +45,7 @@ export default class StationSelector {
       throw Error('[NEXIO]: Elements not found')
     }
     this.buttons.forEach((link, i) => {
-      gsap.set(
-        $(CONFIG.selectors.stationSelectionCopy, link),
-        { width: 0 }
-      )
+      gsap.set($(CONFIG.selectors.stationSelectionCopy, link), { width: 0 })
 
       link.addEventListener('click', e => {
         e.preventDefault()
@@ -55,7 +54,13 @@ export default class StationSelector {
       link.addEventListener('mouseenter', this.handleButtonHover.bind(this))
       link.addEventListener('mouseout', this.handleButtonHoverOut.bind(this))
     })
-    this.mainButton.addEventListener('click', () => this.open())
+    this.mainButton.addEventListener('click', () => {
+      if (!this.isOpen) {
+        this.open()
+      } else {
+        this.close()
+      }
+    })
 
     // Add event listeners for focus management
     document.addEventListener('click', this.handleOutsideClick.bind(this))
@@ -65,6 +70,8 @@ export default class StationSelector {
   }
 
   open() {
+    console.log("OPENING")
+    this.isOpen = true
     gsap
       .timeline()
       .to(this.dropdown, {
@@ -97,6 +104,8 @@ export default class StationSelector {
   }
 
   close() {
+    console.log("CLOSING")
+    this.isOpen = false
     gsap
       .timeline()
       .to(this.dropdown, {

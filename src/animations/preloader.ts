@@ -38,16 +38,19 @@ class Preloader {
     this.loadedVideos = 0
     this.finished = false
     this.endTL = gsap
-      .timeline({ paused: true })
-      .to(this.borderElement, CONFIG.animations.preloader.border)
-      .to(this.images, CONFIG.animations.preloader.fridgesHide)
-      .to(this.preloaderWrapper, {
-        ...CONFIG.animations.preloader.hide,
+      .timeline({
+        paused: true,
         onComplete: () => {
           this.preloaderWrapper.style.display = 'none'
           window.app.onPreloadComplete()
         },
-      }, "<+20%")
+      })
+      .to(this.images, CONFIG.animations.preloader.fridgesHide)
+      .to(this.progressBar.parentNode, CONFIG.animations.preloader.progressFadeOut, "<")
+      .to(this.progressText, CONFIG.animations.preloader.textFadeOut, "<")
+      .to(this.borderElement, CONFIG.animations.preloader.border)
+      .to(this.preloaderWrapper, CONFIG.animations.preloader.hide)
+
     this.init()
   }
 

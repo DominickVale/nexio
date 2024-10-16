@@ -38,7 +38,7 @@ export class CustomCursor {
     this.cursor = $('#custom-cursor') as HTMLElement
     this.cursorSvg = $('svg', this.cursor) as unknown as SVGElement
     this.cursorPath = $('svg path', this.cursor) as unknown as SVGPathElement
-    this.hoverableElements = $all('button, a, #active-station-button')
+    this.hoverableElements = $all(CONFIG.selectors.cursorHoverables.join(','))
 
     const { lagDuration, lagEase } = CONFIG.animations.cursor
 

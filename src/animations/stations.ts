@@ -39,13 +39,19 @@ function setupDraggableBoxes() {
       trigger: button,
       type: 'x,y',
       cursor: 'none',
-      onDragStart: () => window.app.cursor?.setDragging(true),
+      onDragStart: () => {
+        gsap.to(button, CONFIG.animations.draggableBoxes.dragButtonStart)
+        window.app.cursor?.setDragging(true)
+      },
       onDrag: function (e) {
         target.style.setProperty('--drag-x', `${this.x}px`)
         target.style.setProperty('--drag-y', `${this.y}px`)
         window.app.cursor?.onMouseMove(e)
       },
-      onDragEnd: () => window.app.cursor?.setDragging(false),
+      onDragEnd: () => {
+        gsap.to(button, CONFIG.animations.draggableBoxes.dragButtonEnd)
+        window.app.cursor?.setDragging(false)
+      },
     })
   })
 }

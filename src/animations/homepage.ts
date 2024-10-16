@@ -211,8 +211,7 @@ export class Homepage {
                 value: 'station ' + newStationNumber,
                 maxScrambleChars: 3,
               },
-              duration: CONFIG.animations.typewriter.defaultDuration / 2,
-              ease: 'power4.out',
+              ...CONFIG.animations.stationSelector.typewriter,
             },
             '<',
           )
@@ -223,15 +222,16 @@ export class Homepage {
                 value: CONFIG.stations[newStationNumber - 1],
                 maxScrambleChars: CONFIG.animations.typewriter.maxScrambleChars,
               },
-              duration: CONFIG.animations.typewriter.defaultDuration,
-              ease: CONFIG.animations.typewriter.ease,
+              ...CONFIG.animations.stationSelector.typewriter,
             },
             '<+30%',
           )
+          .add(this.animateStationSelectorImgs(newStationNumber), "<")
       }
 
       if (newStationNumber === this.positionsAnimations.length - 1) {
         this.currentAnimation
+          .set(selectors.stationBoxes, { pointerEvents: 'none' })
           .to('.footer-mask', animations.footer.reveal, '<')
           .to(
             selectors.stationSelection,
@@ -244,6 +244,7 @@ export class Homepage {
           )
       } else if (isAnimatingFooterUp) {
         this.currentAnimation
+          .set(selectors.stationBoxes, { pointerEvents: 'auto' })
           .to('.footer-mask', animations.footer.hide, '0')
           .to(
             selectors.stationSelection,
@@ -257,5 +258,25 @@ export class Homepage {
       }
     }
     this.currentIndex = newStationNumber
+  }
+
+  animateStationSelectorImgs(stationId: number) {
+    const tl = gsap.timeline()
+    const images = `${CONFIG.selectors.activeStationBtn} img[data-id]`
+    const activeImg = `${CONFIG.selectors.activeStationBtn} img[data-id="${stationId}"]:not([data-inverted])`
+
+    const { buttonImageAppear, buttonImageHide } =
+      CONFIG.animations.stationSelector
+
+    tl.to(images, buttonImageHide)
+      .set(activeImg, {
+        zIndex: 10,
+      })
+      .to(activeImg, buttonImageAppear)
+      .set(images, {
+        zIndex: 1,
+      })
+
+    return tl
   }
 }

@@ -9,9 +9,9 @@ const config = {
   selectors: {
     box: '#draggable-box',
     boxes: '.draggable-boxes',
-    backToTop: "#back-to-top",
+    backToTop: '#back-to-top',
     cursor: '#custom-cursor',
-    cursorHoverables: ['button', 'a', '#active-station-button'],
+    cursorHoverables: ['button', 'a', '#active-station-button', '.accordion-header'],
     boxClass: '.draggable-box',
     hero: '#hero',
     heroSidebar: '.hero-sidebar',
@@ -39,6 +39,18 @@ const config = {
       ease: 'power3.inOut',
       duration: 1,
     },
+    draggableBoxes: {
+      dragButtonStart: {
+        scale: 1.35,
+        duration: 0.15,
+        ease: "power4.out",
+      },
+      dragButtonEnd: {
+        scale: 1,
+        duration: 0.15,
+        ease: "power4.in",
+      }
+    },
     cursor: {
       lagDuration: 0.1,
       lagEase: 'power3.out',
@@ -46,11 +58,12 @@ const config = {
       transitionEase: 'power2.out',
       states: {
         default: {
-          svg: { rotation: 0, scale: 1 },
+          svg: { rotation: 0, scale: 1, autoAlpha: 1 },
           path: {
             fill: 'var(--secondary)',
             stroke: 'var(--tertiary)',
             strokeWidth: 1,
+            autoAlpha: 1,
           },
         },
         defaultHover: {
@@ -62,8 +75,8 @@ const config = {
           },
         },
         defaultDrag: {
-          svg: { rotation: 0, scale: 1 },
-          path: { fill: 'none', stroke: 'var(--tertiary)', strokeWidth: 1 },
+          svg: { autoAlpha: 0 },
+          path: { autoAlpha: 0 },
         },
         defaultHoverDrag: {
           svg: { rotation: 60, scale: 1.2 },
@@ -110,6 +123,16 @@ const config = {
           ease: 'power3.in',
         },
       },
+      textFadeOut: {
+        autoAlpha: 0,
+        duration: 1,
+        ease: 'power3.in',
+      },
+      progressFadeOut: {
+        autoAlpha: 0,
+        duration: 1,
+        ease: 'power3.in',
+      },
       border: {
         height: '100%',
         duration: 2,
@@ -124,27 +147,39 @@ const config = {
         autoAlpha: 0,
         scale: 0,
         duration: 0.5,
-        ease: "power3.in"
-      }
+        ease: 'power3.in',
+      },
     },
     hero: {
       bigBoxAppearFrom: {
         scale: 0.8,
         autoAlpha: 0,
         duration: 1,
-        ease: "power3.inOut",
+        ease: 'power3.inOut',
+      },
+      bigBoxAppearFromMobile: {
+        scale: 0.8,
+        autoAlpha: 0,
+        duration: 1,
+        ease: 'power3.inOut',
       },
       specBoxAppearFrom: {
         x: () => -window.innerWidth / 8,
         autoAlpha: 0,
         duration: 1,
-        ease: "power3.inOut",
+        ease: 'power3.inOut',
       },
-      sidebarAppearFrom: {
-        x: () => window.innerWidth + (window.innerWidth / 8),
+      specBoxAppearFromMobile: {
+        y: () => window.innerHeight / 5,
         autoAlpha: 0,
         duration: 1,
-        ease: "power3.inOut",
+        ease: 'power3.inOut',
+      },
+      sidebarAppearFrom: {
+        x: () => window.innerWidth + window.innerWidth / 8,
+        autoAlpha: 0,
+        duration: 1,
+        ease: 'power3.inOut',
       },
       defaultFridge: 5,
       fridgeInDuration: 0.5,
@@ -226,16 +261,30 @@ const config = {
       durationClose: 1,
       easeClose: 'power3.in',
       fridgePreviewHoverColor: 'rgba(255, 255, 255, 0.1)',
+      typewriter: {
+        duration: 1.5,
+        ease: 'power4.inOut',
+      },
       hoverOpen: {
-        width: "auto",
-        duration:  0.5,
-        ease: "power4.out"
+        width: 'auto',
+        duration: 0.5,
+        ease: 'power4.out',
       },
       hoverClose: {
         width: 0,
-        duration:  0.5,
-        ease: "power4.out"
-      }
+        duration: 0.5,
+        ease: 'power4.out',
+      },
+      buttonImageAppear: {
+        autoAlpha: 1,
+        duration: 0.5,
+        ease: 'power4.out',
+      },
+      buttonImageHide: {
+        autoAlpha: 0,
+        duration: 0.5,
+        ease: 'power4.in',
+      },
     },
   },
   stations: [
