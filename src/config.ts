@@ -309,6 +309,6 @@ const config = {
       'M0,0 C0.29,0 0.399,0.069 0.458,0.12 0.527,0.178 0.6,0.356 0.6,0.5 0.6,0.706 0.704,1 1,1 ',
   },
 }
-// merge(config, window.NEXIO_CONFIG)
+merge(config, window.NEXIO_CONFIG)
 
 export const CONFIG: typeof config = config
