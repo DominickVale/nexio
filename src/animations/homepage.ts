@@ -223,7 +223,7 @@ export class Homepage {
 
       if (newStationNumber === this.positionsAnimations.length - 1) {
         this.currentAnimation
-          .set(selectors.stationBoxes, { pointerEvents: 'none' })
+          .set(selectors.stationBoxes, { pointerEvents: 'none' }, '<')
           .to('.footer-mask', animations.footer.reveal, '<')
           .to(
             selectors.stationSelection,
@@ -232,7 +232,7 @@ export class Homepage {
               duration: animations.footer.reveal.duration,
               ease: animations.footer.reveal.ease,
             },
-            '<',
+            '<-20%',
           )
       } else if (isAnimatingFooterUp) {
         this.currentAnimation

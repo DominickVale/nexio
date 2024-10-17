@@ -1,17 +1,17 @@
 :root {
-  --videoSize: calc(140vh + 12vw);
+  --videoSize: calc(140svh + 12vw);
 }
 
 #factories-animations-container {
   --left: 300vw; /* should animate to 100.5vw to be shown*/
   --max-left: 200vw;
-  --top: 100vh; /* should animate to -2vh */
+  --top: 100svh; /* should animate to -2svh */
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  left: clamp(4rem, calc(var(--left) - 117vh), var(--max-left));
+  left: clamp(4rem, calc(var(--left) - 117svh), var(--max-left));
   top: var(--top);
   pointer-events: none;
 }
@@ -33,20 +33,20 @@
 
 .image__3 {
   position: absolute;
-  bottom: calc(-0.7 * var(--videoSize));
+  bottom: calc(-0.63 * var(--videoSize));
   right: calc(-0.55 * var(--videoSize));
 }
 
 .image__4 {
   position: absolute;
-  bottom: calc(-0.7 * var(--videoSize));
+  bottom: calc(-0.68 * var(--videoSize));
   right: calc(-0.55 * var(--videoSize));
 }
 
 .image__5 {
   position: absolute;
-  bottom: calc(-0.54 * var(--videoSize));
-  right: calc(-0.56 * var(--videoSize));
+  bottom: calc(-0.535 * var(--videoSize));
+  right: calc(-0.55 * var(--videoSize));
   transform: scale(1.25);
   z-index: 10;
 }
@@ -64,7 +64,7 @@
 
 @media screen and (max-width: 768px) {
   :root {
-    --videoSize: 70vh;
+    --videoSize: 70svh;
   }
 
   #factories-animations-container img.mobile {
@@ -74,8 +74,8 @@
   #factories-animations-container {
     --left: 300vw; /* should animate to 115vw to be shown*/
     --max-left: 200vw; /* 40vw */
-    --top: 100vh; /* 5vh */
-    left: clamp(1rem, calc(var(--left) - 50vh), var(--max-left));
+    --top: 100svh; /* 5svh */
+    left: clamp(1rem, calc(var(--left) - 50svh), var(--max-left));
     top: var(--top);
   }
 
@@ -110,7 +110,7 @@
 
 @media screen and (min-width: 768px) and (max-aspect-ratio: 1/1) {
   :root {
-    --videoSize: 100vh;
+    --videoSize: 100svh;
   }
 
   #factories-animations-container img.mobile {
@@ -119,7 +119,7 @@
 
   #factories-animations-container {
     left: 10vw;
-    top: 5vh;
+    top: 5svh;
   }
 
   #factories-animations-container img:not(.mobile) {
