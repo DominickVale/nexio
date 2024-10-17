@@ -6,6 +6,7 @@ import { Homepage } from './animations/homepage'
 import { CONFIG } from './config'
 import { setupScrambles } from './animations/TextScramble'
 import { setupPreloader } from './animations/preloader'
+import { debounce } from 'lodash'
 
 export default class App {
   heroShown: boolean
@@ -13,9 +14,11 @@ export default class App {
   cursor: CustomCursor
   mainTimeline: gsap.core.Timeline
   homePage: Homepage | undefined
+  debouncedOnResize: () => void
 
   constructor() {
     this.heroShown = true
+    this.debouncedOnResize = debounce(() => window.location.reload(), 1000)
     window.app = this
     this.isHomepage = window.location.pathname === '/'
     this.mainTimeline = gsap.timeline()
@@ -24,8 +27,9 @@ export default class App {
   }
 
   init() {
-    const mm = gsap.matchMedia(),
-      breakpoint = CONFIG.breakpoints.maxMobile
+    // window.addEventListener('resize', this.debouncedOnResize)
+    const mm = gsap.matchMedia()
+    const br = CONFIG.breakpoints
 
     if (CONFIG.enableSmoothScroll) {
       const lenis = new Lenis()
@@ -40,19 +44,21 @@ export default class App {
 
     mm.add(
       {
-        isDesktop: `(min-width: ${breakpoint}px)`,
-        isMobile: `(max-width: ${breakpoint - 1}px)`,
+        isMobile: `(max-width: ${br.mobile}px)`,
+        isTablet: `(min-width: ${br.mobile + 1}px) and (max-aspect-ratio: 1/1)`,
+        isDesktop: `(min-width: ${br.mobile + 1}px) and (min-aspect-ratio: 1/1)`,
         reduceMotion: `(prefers-reduced-motion: reduce)`,
       },
       context => {
-        const { isDesktop, isMobile, reduceMotion } =
-          context.conditions as gsap.Conditions
+        const breakpoints = context.conditions as gsap.Conditions
+        if (CONFIG.debug) {
+          console.log('[NEXIO]: BREAKPOINTS: ', breakpoints)
+        }
 
-        setupPreloader(isDesktop, isMobile, reduceMotion)
-        console.log(window.location.pathname, window.location.pathname === '/')
+        setupPreloader(breakpoints)
         if (this.isHomepage) {
           setupScrambles()
-          this.homePage = new Homepage(isDesktop, isMobile, reduceMotion)
+          this.homePage = new Homepage(breakpoints)
         }
       },
     )
@@ -61,8 +67,8 @@ export default class App {
       console.log('[NEXIO]: NEXIOS_CONFIG: ', CONFIG)
     }
   }
-  onPreloadComplete(){
-    if(this.isHomepage && this.homePage?.hero){
+  onPreloadComplete() {
+    if (this.isHomepage && this.homePage?.hero) {
       this.homePage.hero.animateIn()
     }
   }

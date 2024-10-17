@@ -6,21 +6,17 @@ export default class StationSelector {
   currIdx: number
   buttons: HTMLElement[]
   wrapper: HTMLElement | null
-  isMobile: boolean
-  isDesktop: boolean
-  reduceMotion: boolean
   shown: boolean
   mainButton: HTMLElement | null
   dropdown: HTMLElement | null
   isOpen: boolean
+  breakpoints: gsap.Conditions
 
-  constructor(isDesktop: boolean, isMobile: boolean, reduceMotion: boolean) {
+  constructor(breakpoints: gsap.Conditions) {
     this.currIdx = 1
     this.buttons = []
     this.wrapper = null
-    this.isDesktop = isDesktop
-    this.isMobile = isMobile
-    this.reduceMotion = reduceMotion
+    this.breakpoints = breakpoints
     this.shown = false
     this.mainButton = null
     this.dropdown = null
@@ -49,7 +45,7 @@ export default class StationSelector {
 
       link.addEventListener('click', e => {
         e.preventDefault()
-        this.handleClick(link, this.isDesktop)
+        this.handleClick(link, this.breakpoints.isDesktop)
       })
       link.addEventListener('mouseenter', this.handleButtonHover.bind(this))
       link.addEventListener('mouseout', this.handleButtonHoverOut.bind(this))
@@ -70,7 +66,7 @@ export default class StationSelector {
   }
 
   open() {
-    console.log("OPENING")
+    console.log('OPENING')
     this.isOpen = true
     gsap
       .timeline()
@@ -104,7 +100,7 @@ export default class StationSelector {
   }
 
   close() {
-    console.log("CLOSING")
+    console.log('CLOSING')
     this.isOpen = false
     gsap
       .timeline()

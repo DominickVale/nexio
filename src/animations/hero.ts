@@ -10,22 +10,18 @@ export class Hero {
   links: HTMLElement[]
   parentElement: HTMLElement | null
   specBox: HTMLElement | null
-  isMobile: boolean
-  isDesktop: boolean
-  reduceMotion: boolean
   hexCodeEl: HTMLElement | null
   animateInTL: gsap.core.Timeline
+  breakpoints: gsap.Conditions
 
-  constructor(isDesktop: boolean, isMobile: boolean, reduceMotion: boolean) {
+  constructor(breakpoints: gsap.Conditions) {
     this.currIdx = CONFIG.animations.hero.defaultFridge
     this.fridges = []
     this.links = []
     this.parentElement = null
     this.specBox = null
     this.hexCodeEl = null
-    this.isDesktop = isDesktop
-    this.isMobile = isMobile
-    this.reduceMotion = reduceMotion
+    this.breakpoints = breakpoints
     this.animateInTL = gsap.timeline()
   }
 
@@ -44,10 +40,10 @@ export class Hero {
 
     this.links.forEach(link => {
       link.addEventListener('mouseenter', () =>
-        this.handleHover(link, this.isDesktop),
+        this.handleHover(link, this.breakpoints.isDesktop),
       )
       link.addEventListener('click', () =>
-        this.handleClick(link, this.isDesktop),
+        this.handleClick(link),
       )
     })
 
@@ -84,11 +80,11 @@ export class Hero {
     this.animateInTL = this.createAnimateInTL()
   }
 
-  handleClick(link: HTMLElement, isDesktop: boolean) {
+  handleClick(link: HTMLElement) {
     const idx = Number(link.getAttribute('data-fridge-id'))
     window.app.homePage?.triggerStationAnimation(idx)
 
-    hideHero(isDesktop)
+    hideHero(this.breakpoints)
   }
 
   animateFridges(
@@ -162,13 +158,13 @@ export class Hero {
       .timeline({ paused: true })
       .from(
         heroFridge,
-        this.isMobile
+        this.breakpoints.isMobile
           ? animations.hero.bigBoxAppearFromMobile
           : animations.hero.bigBoxAppearFrom,
       )
       .from(
         heroSpecificationBox,
-        this.isMobile
+        this.breakpoints.isMobile
           ? animations.hero.specBoxAppearFromMobile
           : animations.hero.specBoxAppearFrom,
         '<',
@@ -185,13 +181,9 @@ export class Hero {
 //
 //
 //
-export function setupHeroAnimations(
-  isDesktop: boolean,
-  isMobile: boolean,
-  reduceMotion: boolean,
-) {
+export function setupHeroAnimations(breakpoints: gsap.Conditions) {
   const { selectors } = CONFIG
-  const hero = new Hero(isDesktop, isMobile, reduceMotion)
+  const hero = new Hero(breakpoints)
 
   hero.setup()
 
@@ -200,7 +192,8 @@ export function setupHeroAnimations(
     ScrollTrigger.clearScrollMemory()
     ScrollTrigger.refresh()
     window.history.scrollRestoration = 'manual'
-    hideHero(isDesktop)
+    console.log(breakpoints)
+    hideHero(breakpoints)
 
     animateStationSection(1)
     // window.app.updateVideos('up', 1, 2)
@@ -215,13 +208,30 @@ export function setupHeroAnimations(
 //
 /////
 
-export function hideHero(isDesktop: boolean) {
+export function hideHero(breakpoints: gsap.Conditions) {
   const { selectors, animations } = CONFIG
   const { heroHideEase, heroHideDuration } = animations.hero
   const { factoriesScrollDuration, factoriesScrollEase } = animations.stations
   window.app.heroShown = false
   window.app.cursor.setMode('default')
   window.app.homePage?.animateStationSelectorImgs(1)
+
+  let toLeft, toMaxLeft, toTop
+
+  if (breakpoints.isMobile) {
+    toLeft = '115vw'
+    toMaxLeft = '40vw'
+    toTop = '5vh'
+  } else if (breakpoints.isTablet) {
+    toLeft = '115vw'
+    toMaxLeft = '40vw'
+    toTop = '5vh'
+  } else {
+    toLeft = '100.5vw'
+    toMaxLeft = '35vw'
+    toTop = '-2vh'
+  }
+
   gsap
     .timeline()
     .set('body', { overflow: 'auto' })
@@ -246,9 +256,9 @@ export function hideHero(isDesktop: boolean) {
         '--top': '100vh',
       },
       {
-        '--left': isDesktop ? '100.5vw' : '115vw',
-        '--max-left': isDesktop ? '35vw' : '40vw',
-        '--top': isDesktop ? '-2vh' : '5vh',
+        '--left': toLeft,
+        '--max-left': toMaxLeft,
+        '--top': toTop,
         duration: factoriesScrollDuration * 2,
         ease: factoriesScrollEase,
       },

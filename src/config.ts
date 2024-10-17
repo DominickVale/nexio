@@ -4,7 +4,8 @@ const config = {
   debug: true,
   enableSmoothScroll: false,
   breakpoints: {
-    maxMobile: 768,
+    mobile: 767,
+    tablet: 992,
   },
   selectors: {
     box: '#draggable-box',
@@ -201,7 +202,16 @@ const config = {
         [() => -(window.innerHeight * 0.4), -25],
         [() => -(window.innerHeight * 0.9), -55],
         [() => -(window.innerHeight * 1.4), -85],
-        [() => -(window.innerHeight * 1.9), -115],
+        [() => -(window.innerHeight * 1.77), -110],
+        [() => -(window.innerHeight * 3), -180],
+        [], // no touchy
+      ],
+      positionsTablet: [
+        [0, 0], // no touchy
+        [() => -(window.innerHeight * 0.55), -45],
+        [() => -(window.innerHeight * 1.1), -75],
+        [() => -(window.innerHeight * 1.75), -125],
+        [() => -(window.innerHeight * 2.5), -160],
         [() => -(window.innerHeight * 3), -180],
         [], // no touchy
       ],
@@ -299,6 +309,6 @@ const config = {
       'M0,0 C0.29,0 0.399,0.069 0.458,0.12 0.527,0.178 0.6,0.356 0.6,0.5 0.6,0.706 0.704,1 1,1 ',
   },
 }
-merge(config, window.NEXIO_CONFIG)
+// merge(config, window.NEXIO_CONFIG)
 
 export const CONFIG: typeof config = config

@@ -183,11 +183,7 @@ class Preloader {
   }
 }
 
-export function setupPreloader(
-  isDesktop: boolean,
-  isMobile: boolean,
-  reduceMotion: boolean,
-) {
+export function setupPreloader( breakpoint: gsap.Conditions) {
   CustomEase.create('preloaderBorder', CONFIG.eases.preloaderBorder)
 
   new Preloader()

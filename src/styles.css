@@ -1,3 +1,7 @@
+:root {
+  --videoSize: calc(140vh + 12vw);
+}
+
 #factories-animations-container {
   --left: 300vw; /* should animate to 100.5vw to be shown*/
   --max-left: 200vw;
@@ -11,6 +15,7 @@
   top: var(--top);
   pointer-events: none;
 }
+
 #factories-animations-container img {
   height: 100%;
   width: 100%;
@@ -22,35 +27,33 @@
 
 .image__2 {
   position: absolute;
-  bottom: -108vh;
-  right: -84vh;
+  bottom: calc(-0.7 * var(--videoSize));
+  right: calc(-0.55 * var(--videoSize));
 }
 
 .image__3 {
   position: absolute;
-  bottom: -100vh;
-  right: -80vh;
+  bottom: calc(-0.7 * var(--videoSize));
+  right: calc(-0.55 * var(--videoSize));
 }
 
 .image__4 {
   position: absolute;
-  bottom: -106vh;
-  right: -85vh;
+  bottom: calc(-0.7 * var(--videoSize));
+  right: calc(-0.55 * var(--videoSize));
 }
 
 .image__5 {
   position: absolute;
-  bottom: -86vh;
-  right: -89vh;
+  bottom: calc(-0.54 * var(--videoSize));
+  right: calc(-0.56 * var(--videoSize));
   transform: scale(1.25);
-  z-index:10;
-
+  z-index: 10;
 }
 
 .image__container {
-  --size: calc(140vh + 12vw);
-  width: var(--size);
-  height: var(--size);
+  width: var(--videoSize);
+  height: var(--videoSize);
   position: relative;
 }
 
@@ -60,8 +63,8 @@
 }
 
 @media screen and (max-width: 768px) {
-  .image__container {
-    --size: 70vh;
+  :root {
+    --videoSize: 70vh;
   }
 
   #factories-animations-container img.mobile {
@@ -82,26 +85,69 @@
 
   .image__2 {
     position: absolute;
-    bottom: -26vh;
-    right: -40vh;
+    bottom: calc(-0.371 * var(--videoSize));
+    right: calc(-0.571 * var(--videoSize));
   }
 
   .image__3 {
     position: absolute;
-    bottom: -28vh;
-    right: -45vh;
+    bottom: calc(-0.4 * var(--videoSize));
+    right: calc(-0.643 * var(--videoSize));
   }
 
   .image__4 {
     position: absolute;
-    bottom: -32vh;
-    right: -50vh;
+    bottom: calc(-0.386 * var(--videoSize));
+    right: calc(-0.643 * var(--videoSize));
   }
 
   .image__5 {
     position: absolute;
-    bottom: -28vh;
-    right: -48vh;
+    bottom: calc(-0.357 * var(--videoSize));
+    right: calc(-0.629 * var(--videoSize));
+  }
+}
+
+@media screen and (min-width: 768px) and (max-aspect-ratio: 1/1) {
+  :root {
+    --videoSize: 100vh;
+  }
+
+  #factories-animations-container img.mobile {
+    display: block;
+  }
+
+  #factories-animations-container {
+    left: 10vw;
+    top: 5vh;
+  }
+
+  #factories-animations-container img:not(.mobile) {
+    display: none;
+  }
+
+  .image__2 {
+    position: absolute;
+    bottom: calc(-0.371 * var(--videoSize));
+    right: calc(-0.571 * var(--videoSize));
+  }
+
+  .image__3 {
+    position: absolute;
+    bottom: calc(-0.4 * var(--videoSize));
+    right: calc(-0.643 * var(--videoSize));
+  }
+
+  .image__4 {
+    position: absolute;
+    bottom: calc(-0.386 * var(--videoSize));
+    right: calc(-0.643 * var(--videoSize));
+  }
+
+  .image__5 {
+    position: absolute;
+    bottom: calc(-0.357 * var(--videoSize));
+    right: calc(-0.629 * var(--videoSize));
   }
 }
 

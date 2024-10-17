@@ -8,6 +8,7 @@ import Observer from 'gsap/Observer'
 import CustomEase from 'gsap/CustomEase'
 //@ts-expect-error 
 import { TypewriterPlugin } from './animations/TypewriterPlugin'
+import './styles.css'
 
 gsap.registerPlugin(Observer)
 gsap.registerPlugin(ScrollTrigger)

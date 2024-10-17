@@ -57,11 +57,9 @@ function setupDraggableBoxes() {
 }
 
 export function setupStations(
-  isDesktop: boolean,
-  isMobile: boolean,
-  reduceMotion: boolean,
+  breakpoints: gsap.Conditions
 ) {
-  const stationSelector = new StationSelector(isDesktop, isMobile, reduceMotion)
+  const stationSelector = new StationSelector(breakpoints)
   stationSelector.setup()
   setupDraggableBoxes()
 }

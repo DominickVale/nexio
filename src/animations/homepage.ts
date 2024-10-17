@@ -1,5 +1,4 @@
 import gsap from 'gsap'
-import { debounce } from 'lodash'
 import { CONFIG } from '../config'
 import { $, $all } from '../utils'
 import { setupHeroAnimations } from './hero'
@@ -9,45 +8,38 @@ import { type Hero } from './hero.ts'
 
 export class Homepage {
   videos: NodeListOf<HTMLVideoElement> | null
-  isDesktop: boolean
-  isMobile: boolean
-  reduceMotion: boolean
   currentIndex: number
   currentAnimation: gsap.core.Timeline | undefined
   positionsAnimations: (number | (() => number))[][] | undefined
   isAnimating: boolean
   hero: Hero | undefined
+  breakpoints: gsap.Conditions
 
-  constructor(isDesktop: boolean, isMobile: boolean, reduceMotion: boolean) {
+  constructor(breakpoints: gsap.Conditions) {
     this.videos = null
 
     this.currentIndex = 1
     this.isAnimating = false
 
-    this.isDesktop = isDesktop
-    this.isMobile = isMobile
-    this.reduceMotion = reduceMotion
+    this.breakpoints = breakpoints
     this.setup()
   }
 
   setup() {
     const { selectors, animations } = CONFIG
 
-    this.hero = setupHeroAnimations(
-      this.isDesktop,
-      this.isMobile,
-      this.reduceMotion,
-    )
-    setupStations(this.isDesktop, this.isMobile, this.reduceMotion)
+    this.hero = setupHeroAnimations(this.breakpoints)
+    setupStations(this.breakpoints)
 
     this.videos = $all('video') as NodeListOf<HTMLVideoElement>
 
     // Create the main timeline with ScrollTrigger
     window.app.mainTimeline = gsap.timeline({})
 
-    this.positionsAnimations = this.isMobile
-      ? animations.stations.positionsMobile
-      : animations.stations.positionsDesktop
+    this.positionsAnimations = animations.stations.positionsMobile
+    if(this.breakpoints.isTablet) this.positionsAnimations = animations.stations.positionsTablet
+    if(this.breakpoints.isDesktop) this.positionsAnimations = animations.stations.positionsDesktop
+    console.log("positions: ", this.positionsAnimations)
 
     this.positionsAnimations.forEach((pos, i) => {
       const id = i + 1
@@ -121,7 +113,7 @@ export class Homepage {
     const that = this
     this.currentAnimation = gsap.timeline({
       onUpdate() {
-        const threshold = that.isMobile
+        const threshold = that.breakpoints.isTablet
           ? finishThresholdMobile
           : finishThresholdDesktop
         if (this.progress() >= threshold) {
@@ -226,7 +218,7 @@ export class Homepage {
             },
             '<+30%',
           )
-          .add(this.animateStationSelectorImgs(newStationNumber), "<")
+          .add(this.animateStationSelectorImgs(newStationNumber), '<')
       }
 
       if (newStationNumber === this.positionsAnimations.length - 1) {
