@@ -27,7 +27,7 @@ export default class App {
   }
 
   init() {
-    // window.addEventListener('resize', this.debouncedOnResize)
+    window.addEventListener('resize', this.debouncedOnResize)
     const mm = gsap.matchMedia()
     const br = CONFIG.breakpoints
 

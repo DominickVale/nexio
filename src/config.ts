@@ -200,8 +200,8 @@ const config = {
       positionsMobile: [
         [0, 0], // no touchy
         [() => -(window.innerHeight * 0.4), -25],
-        [() => -(window.innerHeight * 0.9), -55],
-        [() => -(window.innerHeight * 1.4), -85],
+        [() => -(window.innerHeight * 0.85), -55],
+        [() => -(window.innerHeight * 1.3), -85],
         [() => -(window.innerHeight * 1.77), -110],
         [() => -(window.innerHeight * 3), -180],
         [], // no touchy
@@ -209,8 +209,8 @@ const config = {
       positionsTablet: [
         [0, 0], // no touchy
         [() => -(window.innerHeight * 0.55), -45],
-        [() => -(window.innerHeight * 1.1), -75],
-        [() => -(window.innerHeight * 1.75), -125],
+        [() => -(window.innerHeight * 1.25), -80],
+        [() => -(window.innerHeight * 1.85), -130],
         [() => -(window.innerHeight * 2.5), -160],
         [() => -(window.innerHeight * 3), -180],
         [], // no touchy
@@ -218,9 +218,9 @@ const config = {
       positionsDesktop: [
         [0, 0], // no touchy
         [() => -(window.innerHeight * 0.83), -105],
-        [() => -(window.innerHeight * 1.72), -215],
-        [() => -(window.innerHeight * 2.57), -320],
-        [() => -(window.innerHeight * 3.4), -425],
+        [() => -(window.innerHeight * 1.75), -225],
+        [() => -(window.innerHeight * 2.7), -345],
+        [() => -(window.innerHeight * 3.7), -450],
         [() => -(window.innerHeight * 5), -600],
         [], // no touchy
       ],
