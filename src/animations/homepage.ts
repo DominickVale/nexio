@@ -37,9 +37,11 @@ export class Homepage {
     window.app.mainTimeline = gsap.timeline({})
 
     this.positionsAnimations = animations.stations.positionsMobile
-    if(this.breakpoints.isTablet) this.positionsAnimations = animations.stations.positionsTablet
-    if(this.breakpoints.isDesktop) this.positionsAnimations = animations.stations.positionsDesktop
-    console.log("positions: ", this.positionsAnimations)
+    if (this.breakpoints.isTablet)
+      this.positionsAnimations = animations.stations.positionsTablet
+    if (this.breakpoints.isDesktop)
+      this.positionsAnimations = animations.stations.positionsDesktop
+    console.log('positions: ', this.positionsAnimations)
 
     this.positionsAnimations.forEach((pos, i) => {
       const id = i + 1
@@ -56,14 +58,19 @@ export class Homepage {
       type: 'wheel,touch',
       wheelSpeed: -1,
       onDown: () => {
-        if (this.currentIndex > 1 && !this.isAnimating) {
+        if (
+          this.currentIndex > 1 &&
+          !this.isAnimating &&
+          !window.app.heroShown
+        ) {
           this.triggerStationAnimation(this.currentIndex - 1)
         }
       },
       onUp: () => {
         if (
           this.currentIndex < this.positionsAnimations!.length - 1 &&
-          !this.isAnimating
+          !this.isAnimating &&
+          !window.app.heroShown
         ) {
           this.triggerStationAnimation(this.currentIndex + 1)
         }
