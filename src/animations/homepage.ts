@@ -32,6 +32,9 @@ export class Homepage {
     setupStations(this.breakpoints)
 
     this.videos = $all('video') as NodeListOf<HTMLVideoElement>
+    gsap.set(selectors.canvasContainer, { pointerEvents: 'none' })
+    gsap.set(`${CONFIG.selectors.activeStationBtn} img[data-id]`, { opacity: 0 })
+    gsap.set(`${CONFIG.selectors.activeStationBtn} img[data-id="1"]:not([data-inverted])`, { opacity: 1 })
 
     // Create the main timeline with ScrollTrigger
     window.app.mainTimeline = gsap.timeline({})
@@ -228,9 +231,11 @@ export class Homepage {
           .add(this.animateStationSelectorImgs(newStationNumber), '<')
       }
 
+      // REVEAL FOOTER
       if (newStationNumber === this.positionsAnimations.length - 1) {
         this.currentAnimation
           .set(selectors.stationBoxes, { pointerEvents: 'none' }, '<')
+          .set(selectors.canvasContainer, { pointerEvents: 'auto' }, '<')
           .to('.footer-mask', animations.footer.reveal, '<')
           .to(
             selectors.stationSelection,
@@ -241,9 +246,11 @@ export class Homepage {
             },
             '<-20%',
           )
+        // HIDE FOOTER
       } else if (isAnimatingFooterUp) {
         this.currentAnimation
-          .set(selectors.stationBoxes, { pointerEvents: 'auto' })
+          .set(selectors.stationBoxes, { pointerEvents: 'auto' }, "<")
+          .set(selectors.canvasContainer, { pointerEvents: 'none' }, '<')
           .to('.footer-mask', animations.footer.hide, '0')
           .to(
             selectors.stationSelection,

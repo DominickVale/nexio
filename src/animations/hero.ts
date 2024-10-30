@@ -214,7 +214,7 @@ export function hideHero(breakpoints: gsap.Conditions) {
   const { factoriesScrollDuration, factoriesScrollEase } = animations.stations
   window.app.heroShown = false
   window.app.cursor.setMode('default')
-  window.app.homePage?.animateStationSelectorImgs(1)
+  // window.app.homePage?.animateStationSelectorImgs(1)
 
   let toLeft, toMaxLeft, toTop
 
