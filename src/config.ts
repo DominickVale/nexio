@@ -34,6 +34,7 @@ const config = {
     navButton: '#nav-button',
     logoBlueprint: '#logo-blueprint',
     logo: '#logo',
+    canvasContainer: "#canvas-container"
   },
   animations: {
     default: {
