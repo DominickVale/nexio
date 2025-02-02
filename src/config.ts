@@ -3,16 +3,48 @@ import { merge } from 'lodash'
 const config = {
   debug: true,
   enableSmoothScroll: false,
+  riveAnims: {
+    stationInput: 'Station',
+    desktop: {
+      url: '/anim.riv',
+      stateMachine: 'State Machine 1',
+      artboard: 'Dexktop-Viewport-FINAL',
+      inputPath: 'Dexktop-Viewport',
+      // The keys are thresholds (as strings) and the values are the zoom values.
+      // They are checked in descending order.
+      ratioZoomMapping: {
+        '1.98': 98,
+        '1.7': 80,
+        '0': 76, // default if ratio is below 1.7
+      },
+    },
+    mobile: {
+      url: '/anim-mobile.riv',
+      stateMachine: 'State Machine 1',
+      artboard: 'Mobile-viewport-FINAL',
+      inputPath: 'Mobile-viewport',
+      ratioZoomMapping: {
+        '0.75': 65,
+        '0': 100, // default if ratio is below 1
+      },
+    },
+  },
   breakpoints: {
     mobile: 767,
-    tablet: 992,
+    tablet: 1093,
+    ratioDesktop: 1.3266666666666667, // needs to be same as media query for showing canvas
   },
   selectors: {
     box: '#draggable-box',
     boxes: '.draggable-boxes',
     backToTop: '#back-to-top',
     cursor: '#custom-cursor',
-    cursorHoverables: ['button', 'a', '#active-station-button', '.accordion-header'],
+    cursorHoverables: [
+      'button',
+      'a',
+      '#active-station-button',
+      '.accordion-header',
+    ],
     boxClass: '.draggable-box',
     hero: '#hero',
     heroSidebar: '.hero-sidebar',
@@ -34,7 +66,7 @@ const config = {
     navButton: '#nav-button',
     logoBlueprint: '#logo-blueprint',
     logo: '#logo',
-    canvasContainer: "#canvas-container"
+    canvasContainer: '#canvas-container',
   },
   animations: {
     default: {
@@ -45,13 +77,13 @@ const config = {
       dragButtonStart: {
         scale: 1.35,
         duration: 0.15,
-        ease: "power4.out",
+        ease: 'power4.out',
       },
       dragButtonEnd: {
         scale: 1,
         duration: 0.15,
-        ease: "power4.in",
-      }
+        ease: 'power4.in',
+      },
     },
     cursor: {
       lagDuration: 0.1,

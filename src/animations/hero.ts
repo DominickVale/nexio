@@ -42,9 +42,7 @@ export class Hero {
       link.addEventListener('mouseenter', () =>
         this.handleHover(link, this.breakpoints.isDesktop),
       )
-      link.addEventListener('click', () =>
-        this.handleClick(link),
-      )
+      link.addEventListener('click', () => this.handleClick(link))
     })
 
     this.hexCodeEl?.addEventListener('mouseenter', e => {
@@ -216,22 +214,6 @@ export function hideHero(breakpoints: gsap.Conditions) {
   window.app.cursor.setMode('default')
   // window.app.homePage?.animateStationSelectorImgs(1)
 
-  let toLeft, toMaxLeft, toTop
-
-  if (breakpoints.isMobile) {
-    toLeft = '115vw'
-    toMaxLeft = '40vw'
-    toTop = '5vh'
-  } else if (breakpoints.isTablet) {
-    toLeft = '115vw'
-    toMaxLeft = '40vw'
-    toTop = '5vh'
-  } else {
-    toLeft = '100.5vw'
-    toMaxLeft = '35vw'
-    toTop = '-2vh'
-  }
-
   gsap
     .timeline()
     .set('body', { overflow: 'auto' })
@@ -248,17 +230,11 @@ export function hideHero(breakpoints: gsap.Conditions) {
       },
       '<',
     )
-    .fromTo(
+    .from(
       selectors.factoriesContainer,
       {
-        '--left': '300vw',
-        '--max-left': '200vw',
-        '--top': '100vh',
-      },
-      {
-        '--left': toLeft,
-        '--max-left': toMaxLeft,
-        '--top': toTop,
+        x: '100vw',
+        y: '100vh',
         duration: factoriesScrollDuration * 2,
         ease: factoriesScrollEase,
       },

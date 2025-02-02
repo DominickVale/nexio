@@ -148,26 +148,26 @@ export class Homepage {
           ? newStationNumber - 1
           : this.currentIndex - 2
 
-      const [x, yPercent] =
-        this.positionsAnimations[fromBottomToTop ? 0 : posId]
-
       const isAnimatingFooterUp =
         fromBottomToTop ||
         (newStationNumber === this.positionsAnimations.length - 2 &&
           direction === 'up')
       this.isAnimating = true
+      if (window.innerWidth <= CONFIG.breakpoints.tablet) {
+        window.app.riveAnims.mobile?.setNumberStateAtPath(
+          CONFIG.riveAnims.stationInput,
+          newStationNumber,
+          CONFIG.riveAnims.mobile.inputPath,
+        )
+      } else {
+        window.app.riveAnims.desktop?.setNumberStateAtPath(
+          CONFIG.riveAnims.stationInput,
+          newStationNumber,
+          CONFIG.riveAnims.desktop.inputPath,
+        )
+      }
       this.currentAnimation
         .set([oldStation, oldStationBoxes], { clearProps: 'zIndex' })
-        .to(
-          selectors.factoriesContainer,
-          {
-            x,
-            yPercent,
-            duration: factoriesScrollDuration,
-            ease: factoriesScrollEase,
-          },
-          isAnimatingFooterUp ? animations.footer.hide.duration / 2 : 0,
-        )
         .to(
           oldStationBoxes,
           {

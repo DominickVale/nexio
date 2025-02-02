@@ -7,6 +7,7 @@ import { CONFIG } from './config'
 import { setupScrambles } from './animations/TextScramble'
 import { setupPreloader } from './animations/preloader'
 import { debounce } from 'lodash'
+import { Rive } from '@rive-app/webgl2'
 
 export default class App {
   heroShown: boolean
@@ -14,11 +15,26 @@ export default class App {
   cursor: CustomCursor
   mainTimeline: gsap.core.Timeline
   homePage: Homepage | undefined
+  lastWindowWidth: number = window.innerWidth
+  riveAnims: { desktop: Rive | null; mobile: Rive | null } = {
+    desktop: null,
+    mobile: null,
+  }
   debouncedOnResize: () => void
 
   constructor() {
     this.heroShown = true
-    this.debouncedOnResize = debounce(() => window.location.reload(), 1000)
+    this.debouncedOnResize = debounce(() => {
+      if (
+        (this.lastWindowWidth < CONFIG.breakpoints.tablet &&
+          window.innerWidth > CONFIG.breakpoints.tablet) ||
+        (this.lastWindowWidth > CONFIG.breakpoints.tablet &&
+          window.innerWidth < CONFIG.breakpoints.tablet)
+      ) {
+        window.location.reload()
+      }
+      this.lastWindowWidth = window.innerWidth
+    }, 1000)
     window.app = this
     this.isHomepage = window.location.pathname === '/'
     this.mainTimeline = gsap.timeline()
