@@ -83,7 +83,7 @@ export class CustomCursor {
   }
 
   private animate(): void {
-    if(window.innerWidth <= CONFIG.breakpoints.maxMobile) {
+    if(window.innerWidth <= CONFIG.breakpoints.mobile) {
       return
     }
     this.cursorX += (this.mouseX - this.cursorX)

@@ -35,6 +35,11 @@ export default class App {
       }
       this.lastWindowWidth = window.innerWidth
     }, 1000)
+    if(window.app){
+      //just to be sure
+      //@ts-ignore
+      delete window.app
+    }
     window.app = this
     this.isHomepage = window.location.pathname === '/'
     this.mainTimeline = gsap.timeline()
@@ -71,7 +76,7 @@ export default class App {
           console.log('[NEXIO]: BREAKPOINTS: ', breakpoints)
         }
 
-        setupPreloader(breakpoints)
+        setupPreloader()
         if (this.isHomepage) {
           setupScrambles()
           this.homePage = new Homepage(breakpoints)

@@ -209,14 +209,13 @@ export function setupHeroAnimations(breakpoints: gsap.Conditions) {
 export function hideHero(breakpoints: gsap.Conditions) {
   const { selectors, animations } = CONFIG
   const { heroHideEase, heroHideDuration } = animations.hero
-  const { factoriesScrollDuration, factoriesScrollEase } = animations.stations
   window.app.heroShown = false
   window.app.cursor.setMode('default')
   // window.app.homePage?.animateStationSelectorImgs(1)
 
   gsap
     .timeline()
-    .set('body', { overflow: 'auto' })
+    .set('body', { overflow: 'hidden' })
     .to(selectors.hero, {
       autoAlpha: 0,
       y: '-100vh',
@@ -227,16 +226,6 @@ export function hideHero(breakpoints: gsap.Conditions) {
       selectors.hero,
       {
         backgroundImage: 'none',
-      },
-      '<',
-    )
-    .from(
-      selectors.factoriesContainer,
-      {
-        x: '100vw',
-        y: '100vh',
-        duration: factoriesScrollDuration * 2,
-        ease: factoriesScrollEase,
       },
       '<',
     )
