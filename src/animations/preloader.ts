@@ -37,12 +37,18 @@ class Preloader {
 
   constructor() {
     // Cache elements
-    this.progressBar = $('#preloader-progress .inner-progress-bar') as HTMLElement
+    this.progressBar = $(
+      '#preloader-progress .inner-progress-bar',
+    ) as HTMLElement
     this.preloaderWrapper = $('#preloader') as HTMLElement
     this.progressText = $('#preloader-text') as HTMLElement
     this.borderElement = $('#preloader-border') as HTMLElement
-    this.images = Array.from($all('#preloader-fridges > img')) as HTMLImageElement[]
-    this.backgroundTiles = Array.from($all('.background-tiles')) as HTMLElement[]
+    this.images = Array.from(
+      $all('#preloader-fridges > img'),
+    ) as HTMLImageElement[]
+    this.backgroundTiles = Array.from(
+      $all('.background-tiles'),
+    ) as HTMLElement[]
     this.totalImages = this.images.length
 
     this.progressBar.style.transformOrigin = 'left center'
@@ -53,12 +59,18 @@ class Preloader {
         paused: true,
         onComplete: () => {
           this.preloaderWrapper.style.display = 'none'
-          console.log('[NEXIO]: Preload complete - calling window.app.onPreloadComplete()')
+          console.log(
+            '[NEXIO]: Preload complete - calling window.app.onPreloadComplete()',
+          )
           window.app.onPreloadComplete()
         },
       })
       .to(this.images, CONFIG.animations.preloader.fridgesHide)
-      .to(this.progressBar.parentElement, CONFIG.animations.preloader.progressFadeOut, '<')
+      .to(
+        this.progressBar.parentElement,
+        CONFIG.animations.preloader.progressFadeOut,
+        '<',
+      )
       .to(this.progressText, CONFIG.animations.preloader.textFadeOut, '<')
       .to(this.borderElement, CONFIG.animations.preloader.border)
       .to(this.preloaderWrapper, CONFIG.animations.preloader.hide)
@@ -98,7 +110,7 @@ class Preloader {
         [this.progressBar.parentElement, this.borderElement],
         CONFIG.animations.preloader.barFadeIn.from,
         CONFIG.animations.preloader.barFadeIn.to,
-        '<+50%'
+        '<+50%',
       )
   }
 
@@ -127,7 +139,8 @@ class Preloader {
       // Start simulation for Rive phase.
       this.simulatePhaseProgress('rive')
 
-      const isMobile = window.innerWidth / window.innerHeight < CONFIG.breakpoints.ratioDesktop
+      const isMobile =
+        window.innerWidth / window.innerHeight < CONFIG.breakpoints.ratioDesktop
       let desktopLoaded = false
       let mobileLoaded = false
 
@@ -207,7 +220,9 @@ class Preloader {
 
       const handleImageLoad = (img: HTMLImageElement) => {
         loadedCount++
-        console.log(`[NEXIO]: Image loaded (${loadedCount}/${this.totalImages}) - ${img.src}`)
+        console.log(
+          `[NEXIO]: Image loaded (${loadedCount}/${this.totalImages}) - ${img.src}`,
+        )
         this.imagesProgress = loadedCount / this.totalImages
         this.updateProgress()
         if (loadedCount === this.totalImages && !resolved) {
@@ -224,14 +239,16 @@ class Preloader {
           console.log(`[NEXIO]: Image already complete: ${image.src}`)
           handleImageLoad(image)
         } else {
-          image.addEventListener('load', () => handleImageLoad(image), { once: true })
+          image.addEventListener('load', () => handleImageLoad(image), {
+            once: true,
+          })
           image.addEventListener(
             'error',
             () => {
               console.error(`[NEXIO]: Could not load image: ${image.src}`)
               handleImageLoad(image)
             },
-            { once: true }
+            { once: true },
           )
         }
       })
@@ -252,6 +269,15 @@ class Preloader {
   // Helper: Simulate incremental progress for a given phase.
   private simulatePhaseProgress(phase: 'wasm' | 'rive' | 'images'): void {
     const tick = () => {
+      // If this phase has completed, stop the simulation.
+      if (
+        (phase === 'wasm' && this.wasmProgress >= 1) ||
+        (phase === 'rive' && this.riveProgress >= 1) ||
+        (phase === 'images' && this.imagesProgress >= 1)
+      ) {
+        return
+      }
+
       if (phase === 'wasm' && this.wasmProgress < 0.99) {
         this.wasmProgress = Math.min(this.wasmProgress + 0.01, 0.99)
       } else if (phase === 'rive' && this.riveProgress < 0.99) {
@@ -260,6 +286,7 @@ class Preloader {
         this.imagesProgress = Math.min(this.imagesProgress + 0.01, 0.99)
       }
       this.updateProgress()
+
       if (
         (phase === 'wasm' && this.wasmProgress < 0.99) ||
         (phase === 'rive' && this.riveProgress < 0.99) ||
@@ -267,7 +294,9 @@ class Preloader {
       ) {
         setTimeout(
           tick,
-          this.overallProgress < 50 ? Math.random() * 200 : 10 + Math.random() * 500
+          this.overallProgress < 50
+            ? Math.random() * 200
+            : 10 + Math.random() * 500,
         )
       }
     }
@@ -286,7 +315,11 @@ class Preloader {
       overall = ((2 + this.imagesProgress) / 3) * 100
     }
     // If all phases are complete, force overall to 100.
-    if (this.wasmProgress === 1 && this.riveProgress === 1 && this.imagesProgress === 1) {
+    if (
+      this.wasmProgress === 1 &&
+      this.riveProgress === 1 &&
+      this.imagesProgress === 1
+    ) {
       overall = 100
     }
     overall = Math.max(overall, this.lastOverallProgress)
@@ -378,8 +411,13 @@ class Preloader {
       }
       if (riveAnims.mobile) {
         riveAnims.mobile.resizeDrawingSurfaceToCanvas()
-        const zoomInput = riveAnims.mobile.stateMachineInputs(CONFIG.riveAnims.mobile.stateMachine)[0]
-        zoomInput.value = this.getZoomValue(ratio, CONFIG.riveAnims.mobile.ratioZoomMapping)
+        const zoomInput = riveAnims.mobile.stateMachineInputs(
+          CONFIG.riveAnims.mobile.stateMachine,
+        )[0]
+        zoomInput.value = this.getZoomValue(
+          ratio,
+          CONFIG.riveAnims.mobile.ratioZoomMapping,
+        )
       }
     } else {
       if (!riveAnims.desktop?.isPlaying) {
@@ -388,8 +426,13 @@ class Preloader {
       }
       if (riveAnims.desktop) {
         riveAnims.desktop.resizeDrawingSurfaceToCanvas()
-        const zoomInput = riveAnims.desktop.stateMachineInputs(CONFIG.riveAnims.desktop.stateMachine)[0]
-        zoomInput.value = this.getZoomValue(ratio, CONFIG.riveAnims.desktop.ratioZoomMapping)
+        const zoomInput = riveAnims.desktop.stateMachineInputs(
+          CONFIG.riveAnims.desktop.stateMachine,
+        )[0]
+        zoomInput.value = this.getZoomValue(
+          ratio,
+          CONFIG.riveAnims.desktop.ratioZoomMapping,
+        )
       }
     }
   }
